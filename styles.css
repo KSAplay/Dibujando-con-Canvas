@@ -23,8 +23,20 @@ canvas#dibujo{
     background-color: #FFF;
 }
 
-canvas#dibujo:hover{
+canvas#dibujo:hover, #canvasAuxiliar:hover{
     cursor: crosshair;
+}
+
+#canvasAuxiliar{
+    position: absolute;
+    left: 0;
+    top: 0;
+    /*background-color: red;*/
+    z-index: 1;
+}
+
+#prueba{
+    position: absolute;
 }
 
 .titulo{
@@ -47,6 +59,7 @@ canvas#dibujo:hover{
 }
 
 .paper{
+    position: relative;
     float: right;
     height: 560px;
     width: 900px;
