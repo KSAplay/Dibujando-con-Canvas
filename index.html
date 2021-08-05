@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Dibujando con Canvas</title>
+        <link rel="shortcut icon" href="img/lapiz.png">
+        <!-- Anexando la hoja de estilos CSS -->
+        <link href="styles.css" rel="stylesheet" type="text/css">
+        <!-- Importación del tipo de fuente: Lato Regular -->
+        <style>@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');</style>
+        <!-- Importación de de los iconos de Font-Awsome-->
+        <script src="https://kit.fontawesome.com/7b9f8c27b2.js" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <h1 class="titulo">Dibujando con Canvas</h1>
+        <div class="container">
+            <div class="tools">
+                <div class="seccion-1">
+
+                    <input type="color" id="colorPuntero"/>
+                </div>
+                <div class="seccion-2">
+                    <input type="color" id="colorFondo"/>
+                </div>
+                <div class="seccion-3">
+                    <input type="button" value="&#xf2ed" id="botonLimpiar"/>
+                </div>
+            </div>
+            <div class="paper">
+                <canvas id="dibujo">Tu navegador no soporta el elemento Canvas.</canvas>
+            </div>
+        </div>
+        <script src="script.js" language="javascript"></script>
+    </body>
+</html>
