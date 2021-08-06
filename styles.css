@@ -66,31 +66,44 @@ canvas#canvasAuxiliar{
     background-color: #303134;
 }
 
-.seccion-1{
+.seccion-1,.seccion-3{
     padding: 20px 0 30px 0;
 }
 
-.seccion-1 *{
-    width: 35px;
-    height: 35px;
-    border-radius: 3px;
-    background-color: white;
-    font-family: "FontAwesome";
-    font-size: 20px;
+.seccion-4{
+    padding: 0 20%;
 }
 
 .seccion-5{
-    float: inline-end;
+    padding: 10px 27%;
+}
+
+.tituloFondo, .tituloLimpiar{
+    float: left;
+    padding-right: 10px;
+}
+
+.tituloGrosor{
+    text-align: center;
+    padding-bottom: 5px;
 }
 
 .tool-button{
     margin: 10px 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 3px;
     background-color: white;
+    font-family: "FontAwesome";
+    font-size: 25px;
+    opacity: 1;
+    transition: background-color .1s;
+    transition: opacity .5s;
 }
 
 #colorFondo{
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
     border-radius: 3px;
     background-color: white;
 }
@@ -102,10 +115,10 @@ canvas#canvasAuxiliar{
     background-color: white;
 }
 
-input[type="button"]:hover{
+input[type="button"]:hover, input[type="submit"]:hover{
     cursor: pointer;
     background-color: #d3d3d3;
-    animation: hola 1s delay iteration-count direction fill-mode;
+    opacity: 0.7;
 }
 
 input[type="color"]:hover{
@@ -115,10 +128,10 @@ input[type="color"]:hover{
 
 .slider {
     -webkit-appearance: none;
-    width: 100%;
-    height: 15px;
+    width: 80%;
+    height: 8px;
     border-radius: 5px;
-    background: #d3d3d3;
+    background: white;
     outline: none;
     opacity: 0.7;
     -webkit-transition: .2s;
@@ -132,16 +145,8 @@ input[type="color"]:hover{
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background: #4E7FFF;
-    cursor: pointer;
-}
-  
-.slider::-moz-range-thumb {
-    width: 25px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: #4E7FFF;
     cursor: pointer;
@@ -158,8 +163,16 @@ input[type="color"]:hover{
 }
 
 .boton-1{
+    float: left;
     font-size: 30px;
 }
 .boton-2{
+    float: right;
     font-size: 25px;
+}
+
+.nombre{
+    text-align: center;
+    width: 100%;
+    padding-top: 10px;
 }

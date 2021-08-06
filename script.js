@@ -10,15 +10,8 @@ var canvasAuxiliar, ctxAux;
 // -------------------------------------------------------------------------
 //                               INPUTS
 // -------------------------------------------------------------------------
-const colorPunteroInput = document.getElementById('colorPuntero');
-colorPunteroInput.addEventListener("change", cambioColor);
-
-const colorFondoInput = document.getElementById('colorFondo');
-colorFondoInput.addEventListener("change", cambioFondo);
-colorFondoInput.value = "#FFFFFF";
-
-const botonLimpiar = document.getElementById('botonLimpiar');
-botonLimpiar.addEventListener("click", limpiarCanvas);
+const botonLapiz = document.getElementById('botonLapiz');
+botonLapiz.addEventListener("click", dibujarConMouse);
 
 const botonRectFill = document.getElementById('botonRectFill');
 botonRectFill.addEventListener("click", rectanguloConRelleno);
@@ -26,19 +19,28 @@ botonRectFill.addEventListener("click", rectanguloConRelleno);
 const botonRectStroke = document.getElementById('botonRectStroke');
 botonRectStroke.addEventListener("click", rectanguloSinRelleno);
 
+const botonBorrar = document.getElementById('botonBorrar');
+botonBorrar.addEventListener("click", borrar);
+
 const botonCircleFill = document.getElementById('botonCircleFill');
 botonCircleFill.addEventListener("click", circuloConRelleno);
 
 const botonCircleStroke = document.getElementById('botonCircleStroke');
-botonCircleStroke.addEventListener("click", crearCirculo);
+botonCircleStroke.addEventListener("click", circuloSinRelleno);
 
-const botonLapiz = document.getElementById('botonLapiz');
-botonLapiz.addEventListener("click", dibujarConMouse);
-botonLapiz.style.background = "#4E7FFF";
+const botonLimpiar = document.getElementById('botonLimpiar');
+botonLimpiar.addEventListener("click", limpiarCanvas);
+
+const colorPunteroInput = document.getElementById('colorPuntero');
+colorPunteroInput.addEventListener("change", cambioColor);
 
 const slider = document.getElementById('rangoGrosor');
 const valorGrosor = document.getElementById('valorGrosor');
 valorGrosor.innerHTML = slider.value;
+
+const colorFondoInput = document.getElementById('colorFondo');
+colorFondoInput.addEventListener("change", cambioFondo);
+colorFondoInput.value = "#FFFFFF";
 
 slider.oninput = function() {
     valorGrosor.innerHTML = this.value;
@@ -60,6 +62,7 @@ canvas.height = height;
 var estadoClick =  false;
 var colorPuntero = "#000000";
 var colorFondo = "#FFFFFF"
+var colorSeleccion = "#4E7FFF";
 var grosorPuntero = slider.value;
 var pos = { x: 0, y: 0 };
 
@@ -67,7 +70,9 @@ var existeCanvasAuxiliar = false;
 var widthAux = 0, heightAux = 0;
 
 var creandoRectangulo = false, creandoCirculo = false, conRelleno = true;
-var botonActivado = false;
+var borrando = false;
+
+botonLapiz.style.background = colorSeleccion;
 
 // -------------------------------------------------------------------------
 //                              FUNCIONES
@@ -83,16 +88,9 @@ function clickDown(evento){
     if(creandoRectangulo){
         // Si se está creando un rectángulo, este sibuja uno pequeño al hacer click por primera vez
         if(conRelleno){
-            ctxAux.fillStyle = colorPuntero;
-            ctxAux.beginPath();
-            ctxAux.fillRect(pos.x, pos.y, 1, 1);
-            ctxAux.closePath();
+            
         } else {
-            ctxAux.strokeStyle = colorPuntero;
-            ctxAux.
-            ctxAux.beginPath();
-            ctxAux.strokeRect(pos.x, pos.y, 1, 1);
-            ctxAux.closePath();
+            
         }
     }
     else if(creandoCirculo){
@@ -100,14 +98,29 @@ function clickDown(evento){
 
     }
     else{
-        ctx.strokeStyle = colorPuntero;
-        ctx.lineWidth = grosorPuntero;
-        ctx.lineJoin = "round";
-        ctx.beginPath();
-        ctx.moveTo(pos.x,pos.y);
-        ctx.lineTo(pos.x+1,pos.y+1);
-        ctx.closePath();
-        ctx.stroke();
+        if(borrando){
+            ctx.strokeStyle = "#FFF";
+            ctx.globalCompositeOperation = "destination-out";
+            ctx.strokeStyle = colorPuntero;
+            ctx.lineWidth = grosorPuntero;
+            ctx.lineJoin = "round";
+            ctx.beginPath();
+            ctx.moveTo(pos.x,pos.y);
+            ctx.lineTo(pos.x+0.1,pos.y+0.1);
+            ctx.closePath();
+            ctx.stroke();
+        } else {
+            ctx.strokeStyle = colorPuntero;
+            ctx.globalCompositeOperation = "source-over";
+            ctx.strokeStyle = colorPuntero;
+            ctx.lineWidth = grosorPuntero;
+            ctx.lineJoin = "round";
+            ctx.beginPath();
+            ctx.moveTo(pos.x,pos.y);
+            ctx.lineTo(pos.x+0.1,pos.y+0.1);
+            ctx.closePath();
+            ctx.stroke();
+        }
     }
 }
 // --------------------- CUANDO SE MUEVE EL MOUSE -------------------------- 
@@ -142,21 +155,34 @@ function movimientoMouse(evento){
 
 
         } else {
-            // Ejemplo de como se vería si se eliminara constantemente en el canvias principal
-            //limpiarCanvas();  // Descomentar para probar
-            ctx.strokeStyle = colorPuntero;
-            ctx.lineWidth = grosorPuntero;
-            ctx.globalCompositeOperation = "source-over";
-            ctx.lineJoin = "round";
-            ctx.beginPath();
-            ctx.moveTo(pos.x,pos.y);
-            ctx.lineTo(evento.layerX, evento.layerY);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-            // Reestablecemos
-            pos.x = evento.layerX;
-            pos.y = evento.layerY;
+            if(borrando){
+                ctx.strokeStyle = "#FFF";
+                ctx.lineWidth = grosorPuntero;
+                ctx.globalCompositeOperation = "destination-out";
+                ctx.beginPath();
+                ctx.moveTo(pos.x,pos.y);
+                ctx.lineTo(evento.layerX, evento.layerY);
+                ctx.closePath();
+                ctx.stroke();
+                // Reestablecemos
+                pos.x = evento.layerX;
+                pos.y = evento.layerY;
+            } else {
+                // Ejemplo de como se vería si se eliminara constantemente en el canvias principal
+                //limpiarCanvas();  // Descomentar para probar
+                ctx.strokeStyle = colorPuntero;
+                ctx.lineWidth = grosorPuntero;
+                ctx.globalCompositeOperation = "source-over";
+                ctx.lineJoin = "round";
+                ctx.beginPath();
+                ctx.moveTo(pos.x,pos.y);
+                ctx.lineTo(evento.layerX, evento.layerY);
+                ctx.closePath();
+                ctx.stroke();
+                // Reestablecemos
+                pos.x = evento.layerX;
+                pos.y = evento.layerY;
+            }
         }
     }
 }
@@ -170,17 +196,38 @@ function clickUp(){
         ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
         // Aqui dibujamos el rectangulo en el canvas principal con los datos obtenidos con el canvasAuxiliar
         if(conRelleno){
+            ctx.globalCompositeOperation = "source-over";
             ctx.fillStyle = colorPuntero;
+            ctx.beginPath();
             ctx.fillRect(pos.x, pos.y, widthAux, heightAux);
+            ctx.closePath();
+            // Reestablecemos a 0
+            widthAux = 0;
+            heightAux = 0;
         }
         else {
+            ctx.globalCompositeOperation = "source-over";
+            ctx.strokeStyle = colorPuntero;
+            ctx.lineWidth = grosorPuntero;
+            ctx.lineJoin = "round";
+            ctx.beginPath();
             ctx.strokeRect(pos.x, pos.y, widthAux, heightAux);
+            ctx.closePath();
+            // Reestablecemos a 0
+            widthAux = 0;
+            heightAux = 0;
         }
     }
     else if(creandoCirculo){
         ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
         // Aqui dibujamos el circulo en el canvas principal con los datos obtenidos con el canvasAuxiliar
-
+        if(conRelleno){
+            ctx.globalCompositeOperation = "source-over";
+            ctx.fillStyle = colorPuntero;
+        } else {
+            ctx.globalCompositeOperation = "source-over";
+            ctx.strokeStyle = colorPuntero;
+        }
     }
 }
 
@@ -201,6 +248,20 @@ function limpiarCanvas()
 }
 
 function dibujarConMouse(){
+    deseleccionarBotones();
+    botonLapiz.style.background = colorSeleccion;
+    creandoCirculo = false;
+    creandoRectangulo = false;
+    borrando = false;
+    if(existeCanvasAuxiliar){
+        eliminarCanvasAuxiliar();
+    }
+}
+
+function borrar(){
+    borrando = true;
+    deseleccionarBotones();
+    botonBorrar.style.background = colorSeleccion;
     creandoCirculo = false;
     creandoRectangulo = false;
     if(existeCanvasAuxiliar){
@@ -228,11 +289,15 @@ function crearRectangulo(){
 function rectanguloConRelleno(){
     conRelleno = true;
     crearRectangulo();
+    deseleccionarBotones();
+    botonRectFill.style.background = colorSeleccion;
 }
 
 function rectanguloSinRelleno(){
     conRelleno = false;
     crearRectangulo();
+    deseleccionarBotones();
+    botonRectStroke.style.background = colorSeleccion;
 }
 
 function crearCirculo(){
@@ -254,6 +319,15 @@ function crearCirculo(){
 function circuloConRelleno(){
     conRelleno = true;
     crearCirculo();
+    deseleccionarBotones();
+    botonCircleFill.style.background = colorSeleccion;
+}
+
+function circuloSinRelleno(){
+    conRelleno = false;
+    crearCirculo();
+    deseleccionarBotones();
+    botonCircleStroke.style.background = colorSeleccion;
 }
 
 function añadirCanvasAuxiliar(){
@@ -268,5 +342,14 @@ function añadirCanvasAuxiliar(){
 function eliminarCanvasAuxiliar(){
     document.getElementById('canvasAuxiliar').remove(this);
     existeCanvasAuxiliar = false;
+}
+
+function deseleccionarBotones(){
+    botonLapiz.style.background = "#FFF";
+    botonRectFill.style.background = "#FFF";
+    botonRectStroke.style.background = "#FFF";
+    botonBorrar.style.background = "#FFF";
+    botonCircleFill.style.background = "#FFF";
+    botonCircleStroke.style.background = "#FFF";
 }
 

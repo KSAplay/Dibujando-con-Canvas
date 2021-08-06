@@ -20,7 +20,7 @@
                     <input class="tool-button" type="button" value="&#xf45c" id="botonRectFill"/>
                     <input class="tool-button" type="button" value="&#xf0c8" id="botonRectStroke"/>
                     <br>
-                    <input class="tool-button" type="button" value="&#xf2ed" id="botonLimpiar"/>
+                    <input class="tool-button" type="button" value="&#xf12d" id="botonBorrar"/>
                     <input class="tool-button" type="button" value="&#xf111" id="botonCircleFill"/>
                     <input class="tool-button" type="button" value="&#xf111" id="botonCircleStroke"/>
                 </div>
@@ -28,18 +28,24 @@
                     <input type="color" id="colorPuntero"/>
                 </div>
                 <div class="seccion-3">
-                    <input type="range" min="1" max="100" value="5" class="slider" id="rangoGrosor">
-                    <p>Grosor: <span id="valorGrosor"></span></p>
+                    <p class="tituloGrosor">Grosor: <strong><span id="valorGrosor"></span></strong></p>
+                    <input type="range" min="1" max="70" value="10" class="slider" id="rangoGrosor">
                 </div>
                 <div class="seccion-4">
-                    <p>Fondo: </p><input type="color" id="colorFondo"/>
+                    <p class="tituloFondo"><strong>Fondo:</strong> </p><input type="color" id="colorFondo"/><br>
+                    <p class="tituloLimpiar"><strong>Limpiar:</strong> </p><input class="tool-button" type="button" value="&#xf2ed" id="botonLimpiar"/>
                 </div>
                 <div class="seccion-5">
-                    <input class="boton-1" type="button" value="&#xf09b"/>
-                    <input class="boton-2" type="button" value="&#xf0e1"/>
+                    <form action="https://github.com/KSAplay">
+                        <input class="boton-1" type="submit" value="&#xf09b"/>
+                    </form>
+                    <form action="https://www.linkedin.com/in/kenny-saavedra-altuna/">
+                        <input class="boton-2" type="submit" value="&#xf0e1"/>
+                    </form>
                     <br>
-                    <p class="nombre">by: <strong>Kenny</strong></p>
                 </div>
+                <br>
+                <p class="nombre">by: <strong>Kenny</strong></p>
             </div>
             <div class="paper" id="recuadro">
                 <canvas id="dibujo">Tu navegador no soporta el elemento Canvas.</canvas>
