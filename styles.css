@@ -27,11 +27,10 @@ canvas#dibujo:hover, #canvasAuxiliar:hover{
     cursor: crosshair;
 }
 
-#canvasAuxiliar{
+canvas#canvasAuxiliar{
     position: absolute;
     left: 0;
     top: 0;
-    /*background-color: red;*/
     z-index: 1;
 }
 
@@ -67,30 +66,100 @@ canvas#dibujo:hover, #canvasAuxiliar:hover{
     background-color: #303134;
 }
 
-#colorFondo{
-    width: 35px;
-    height: 35px;
-    border-radius: 3px;
-    background-color: #FFF;
+.seccion-1{
+    padding: 20px 0 30px 0;
 }
 
-#colorPuntero{
+.seccion-1 *{
     width: 35px;
     height: 35px;
     border-radius: 3px;
-    background-color: #FFF;
-}
-
-#botonLimpiar{
-    width: 35px;
-    height: 35px;
-    border-radius: 3px;
-    background-color: #FFF;
+    background-color: white;
     font-family: "FontAwesome";
     font-size: 20px;
 }
 
-#colorPuntero:hover, #colorFondo:hover, #botonLimpiar:hover {
+.seccion-5{
+    float: inline-end;
+}
+
+.tool-button{
+    margin: 10px 10px;
+    background-color: white;
+}
+
+#colorFondo{
+    width: 35px;
+    height: 35px;
+    border-radius: 3px;
+    background-color: white;
+}
+
+#colorPuntero{
+    width: 151px;
+    height: 35px;
+    border-radius: 3px;
+    background-color: white;
+}
+
+input[type="button"]:hover{
     cursor: pointer;
-    background-color: rgb(214, 214, 214);
+    background-color: #d3d3d3;
+    animation: hola 1s delay iteration-count direction fill-mode;
+}
+
+input[type="color"]:hover{
+    cursor: pointer;
+    border-color: #d3d3d3;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+  
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4E7FFF;
+    cursor: pointer;
+}
+  
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4E7FFF;
+    cursor: pointer;
+}
+
+.boton-1, .boton-2{
+    text-align: center;
+    font-family: "FontAwesome";
+    width: 40px;
+    height: 40px;
+    margin: 5px 5px;
+    border-radius: 50%;
+    background-color: white;
+}
+
+.boton-1{
+    font-size: 30px;
+}
+.boton-2{
+    font-size: 25px;
 }

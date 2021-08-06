@@ -1,5 +1,5 @@
 // -------------------------------------------------------------------------
-//                               VARIABLES
+//                                CANVAS
 // -------------------------------------------------------------------------
 // Canvas y Contexto
 const canvas = document.getElementById('dibujo');
@@ -7,7 +7,9 @@ const ctx = canvas.getContext('2d');
 // Canvas y Contexto Auxiliar
 var canvasAuxiliar, ctxAux;
 
-// Inputs
+// -------------------------------------------------------------------------
+//                               INPUTS
+// -------------------------------------------------------------------------
 const colorPunteroInput = document.getElementById('colorPuntero');
 colorPunteroInput.addEventListener("change", cambioColor);
 
@@ -17,6 +19,31 @@ colorFondoInput.value = "#FFFFFF";
 
 const botonLimpiar = document.getElementById('botonLimpiar');
 botonLimpiar.addEventListener("click", limpiarCanvas);
+
+const botonRectFill = document.getElementById('botonRectFill');
+botonRectFill.addEventListener("click", rectanguloConRelleno);
+
+const botonRectStroke = document.getElementById('botonRectStroke');
+botonRectStroke.addEventListener("click", rectanguloSinRelleno);
+
+const botonCircleFill = document.getElementById('botonCircleFill');
+botonCircleFill.addEventListener("click", circuloConRelleno);
+
+const botonCircleStroke = document.getElementById('botonCircleStroke');
+botonCircleStroke.addEventListener("click", crearCirculo);
+
+const botonLapiz = document.getElementById('botonLapiz');
+botonLapiz.addEventListener("click", dibujarConMouse);
+botonLapiz.style.background = "#4E7FFF";
+
+const slider = document.getElementById('rangoGrosor');
+const valorGrosor = document.getElementById('valorGrosor');
+valorGrosor.innerHTML = slider.value;
+
+slider.oninput = function() {
+    valorGrosor.innerHTML = this.value;
+    grosorPuntero = slider.value;
+}
 
 // Eventos del Mouse en Canvas
 canvas.addEventListener("mousedown", clickDown, false); // Detecta cuando hace clic
@@ -33,75 +60,46 @@ canvas.height = height;
 var estadoClick =  false;
 var colorPuntero = "#000000";
 var colorFondo = "#FFFFFF"
-var grosorPuntero = 50; // cambiar esto por un slider
-var pos = {
-    x: 0,
-    y: 0
-};
-var posInicialAux
+var grosorPuntero = slider.value;
+var pos = { x: 0, y: 0 };
 
-var creandoRectangulo = false, creandoCirculo = false;
+var existeCanvasAuxiliar = false;
+var widthAux = 0, heightAux = 0;
+
+var creandoRectangulo = false, creandoCirculo = false, conRelleno = true;
+var botonActivado = false;
 
 // -------------------------------------------------------------------------
 //                              FUNCIONES
 // -------------------------------------------------------------------------
+// --------- CUANDO SE PRESIONA EL CLIC (ocurre una vez por clic) ---------- 
+function clickDown(evento){
 
-function movimientoMouse(evento)
-{
-    if(estadoClick)
-    {
-        if(creandoRectangulo)
-        {
-            // limpiamos constantemente el canvas Auxiliar en cada movimiento
-            // y dibujamos la digura en la ultima posicion de cada movimiento
-            ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
-
-
-        }
-        else if(creandoCirculo)
-        {
-            // limpiamos constantemente el canvas Auxiliar en cada movimiento
-            // y dibujamos la digura en la ultima posicion de cada movimiento
-            ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
-
-
-        }
-        else
-        {
-            //limpiarCanvas();  // Ejemplo de como se vería si se eliminara constantemente en el canvias principal
-            
-            ctx.strokeStyle = colorPuntero;
-            ctx.lineWidth = grosorPuntero;
-            ctx.globalCompositeOperation = "source-over";
-            ctx.lineJoin = "round";
-            ctx.beginPath();
-            ctx.moveTo(pos.x,pos.y);
-            ctx.lineTo(evento.layerX, evento.layerY);
-            ctx.closePath();
-            ctx.stroke();
-            // Reestablecemos
-            pos.x = evento.layerX;
-            pos.y = evento.layerY;
-        }
-    }
-}
-
-function clickDown(evento)
-{
     estadoClick = true;
+    // Guarda la posicion del mouse cuando se hace el click
     pos.x = evento.layerX;
     pos.y = evento.layerY;
 
-    if(creandoRectangulo)
-    {
-        // Aqui crea el rectangulo inicial con el ctxAux
+    if(creandoRectangulo){
+        // Si se está creando un rectángulo, este sibuja uno pequeño al hacer click por primera vez
+        if(conRelleno){
+            ctxAux.fillStyle = colorPuntero;
+            ctxAux.beginPath();
+            ctxAux.fillRect(pos.x, pos.y, 1, 1);
+            ctxAux.closePath();
+        } else {
+            ctxAux.strokeStyle = colorPuntero;
+            ctxAux.
+            ctxAux.beginPath();
+            ctxAux.strokeRect(pos.x, pos.y, 1, 1);
+            ctxAux.closePath();
+        }
     }
-    else if(creandoCirculo)
-    {
-        // aqui crea el circulo inicial con el ctxAux
+    else if(creandoCirculo){
+        // Si se está creando un círculo, este sibuja uno pequeño al hacer click por primera vez
+
     }
-    else
-    {
+    else{
         ctx.strokeStyle = colorPuntero;
         ctx.lineWidth = grosorPuntero;
         ctx.lineJoin = "round";
@@ -112,24 +110,77 @@ function clickDown(evento)
         ctx.stroke();
     }
 }
+// --------------------- CUANDO SE MUEVE EL MOUSE -------------------------- 
+function movimientoMouse(evento){
+    if(estadoClick){
+        if(creandoRectangulo){
+            // limpiamos constantemente el canvas Auxiliar en cada movimiento del mouse
+            // y dibujamos la figura en la ultima posicion que se quedó el mouse después del movimiento
+            ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
+            if(conRelleno){
+                widthAux = evento.layerX - pos.x;
+                heightAux = evento.layerY - pos.y;
+                ctxAux.fillStyle = colorPuntero;
+                ctxAux.beginPath();
+                ctxAux.fillRect(pos.x, pos.y, widthAux, heightAux);
+                ctxAux.closePath();
+            } else {
+                widthAux = evento.layerX - pos.x;
+                heightAux = evento.layerY - pos.y;
+                ctxAux.lineWidth = grosorPuntero;
+                ctxAux.strokeStyle = colorPuntero;
+                ctxAux.lineJoin = 'round';
+                ctxAux.beginPath();
+                ctxAux.strokeRect(pos.x, pos.y, widthAux, heightAux);
+                ctxAux.closePath();
+            }
 
-function clickUp()
-{
+        } else if(creandoCirculo){
+            // limpiamos constantemente el canvas Auxiliar en cada movimiento
+            // y dibujamos la digura en la ultima posicion de cada movimiento
+            ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
+
+
+        } else {
+            // Ejemplo de como se vería si se eliminara constantemente en el canvias principal
+            //limpiarCanvas();  // Descomentar para probar
+            ctx.strokeStyle = colorPuntero;
+            ctx.lineWidth = grosorPuntero;
+            ctx.globalCompositeOperation = "source-over";
+            ctx.lineJoin = "round";
+            ctx.beginPath();
+            ctx.moveTo(pos.x,pos.y);
+            ctx.lineTo(evento.layerX, evento.layerY);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            // Reestablecemos
+            pos.x = evento.layerX;
+            pos.y = evento.layerY;
+        }
+    }
+}
+// ----------------------- CUANDO SE SUELTA EL CLIC ------------------------ 
+function clickUp(){
+    // Cambiamos el estado del clic a falso
     estadoClick = false;
-
+    // Verifica si se esta creando alguna figura (Rectangulo o Circulo, con relleno o sin relleno)
     if(creandoRectangulo){
-        // Aqui dibujamos el rectangulo en el canvas principal con el ctx y con los datos obtenidos con el canvasAuxiliar
-
-
-        creandoRectangulo = false;
-        eliminarCanvasAuxiliar();
+        // Limpiamos el canvasAuxiliar para que no se visualice la ultima figura
+        ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
+        // Aqui dibujamos el rectangulo en el canvas principal con los datos obtenidos con el canvasAuxiliar
+        if(conRelleno){
+            ctx.fillStyle = colorPuntero;
+            ctx.fillRect(pos.x, pos.y, widthAux, heightAux);
+        }
+        else {
+            ctx.strokeRect(pos.x, pos.y, widthAux, heightAux);
+        }
     }
     else if(creandoCirculo){
-        // Aqui dibujamos el circulo en el canvas principal con el ctx y con los datos obtenidos con el canvasAuxiliar
+        ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
+        // Aqui dibujamos el circulo en el canvas principal con los datos obtenidos con el canvasAuxiliar
 
-
-        creandoCirculo = false;
-        eliminarCanvasAuxiliar();
     }
 }
 
@@ -149,9 +200,20 @@ function limpiarCanvas()
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
-function crearReactangulo()
-{
-    añadirCanvasAuxiliar();
+function dibujarConMouse(){
+    creandoCirculo = false;
+    creandoRectangulo = false;
+    if(existeCanvasAuxiliar){
+        eliminarCanvasAuxiliar();
+    }
+}
+
+function crearRectangulo(){
+    creandoCirculo = false;
+    if(!existeCanvasAuxiliar){
+        añadirCanvasAuxiliar();
+    }
+
     canvasAux = document.getElementById('canvasAuxiliar');
     ctxAux = canvasAux.getContext('2d');
     // Eventos del Mouse del Canvas Auxiliar para las animaciones
@@ -159,11 +221,25 @@ function crearReactangulo()
     canvasAux.addEventListener("mouseup", clickUp, false);
     canvasAux.addEventListener("mousemove", movimientoMouse);
     canvasAux.addEventListener('mouseleave', clickUp, false);
+
+    creandoRectangulo = true;
 }
 
-function crearCirculo()
-{
-    añadirCanvasAuxiliar();
+function rectanguloConRelleno(){
+    conRelleno = true;
+    crearRectangulo();
+}
+
+function rectanguloSinRelleno(){
+    conRelleno = false;
+    crearRectangulo();
+}
+
+function crearCirculo(){
+    creandoRectangulo = false;
+    if(!existeCanvasAuxiliar){
+        añadirCanvasAuxiliar();
+    }
     canvasAux = document.getElementById('canvasAuxiliar');
     ctxAux = canvasAux.getContext('2d');
     // Eventos del Mouse del Canvas Auxiliar para las animaciones
@@ -172,20 +248,25 @@ function crearCirculo()
     canvasAux.addEventListener("mousemove", movimientoMouse);
     canvasAux.addEventListener('mouseleave', clickUp, false);
 
-    creandoRectan
+    creandoCirculo = true;
 }
 
-function añadirCanvasAuxiliar()
-{
+function circuloConRelleno(){
+    conRelleno = true;
+    crearCirculo();
+}
+
+function añadirCanvasAuxiliar(){
     const canvasAuxiliar = document.createElement('canvas');
     canvasAuxiliar.id = 'canvasAuxiliar';
     canvasAuxiliar.width = width;
     canvasAuxiliar.height = height;
     document.getElementById('recuadro').appendChild(canvasAuxiliar);
+    existeCanvasAuxiliar = true;
 }
 
-function eliminarCanvasAuxiliar()
-{
-    document.getElementById('canvasAuxiliar').remove();
+function eliminarCanvasAuxiliar(){
+    document.getElementById('canvasAuxiliar').remove(this);
+    existeCanvasAuxiliar = false;
 }
 

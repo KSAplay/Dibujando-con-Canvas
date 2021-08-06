@@ -16,14 +16,29 @@
         <div class="container">
             <div class="tools">
                 <div class="seccion-1">
-
-                    <input type="color" id="colorPuntero"/>
+                    <input class="tool-button" type="button" value="&#xf303" id="botonLapiz"/>
+                    <input class="tool-button" type="button" value="&#xf45c" id="botonRectFill"/>
+                    <input class="tool-button" type="button" value="&#xf0c8" id="botonRectStroke"/>
+                    <br>
+                    <input class="tool-button" type="button" value="&#xf2ed" id="botonLimpiar"/>
+                    <input class="tool-button" type="button" value="&#xf111" id="botonCircleFill"/>
+                    <input class="tool-button" type="button" value="&#xf111" id="botonCircleStroke"/>
                 </div>
                 <div class="seccion-2">
-                    <input type="color" id="colorFondo"/>
+                    <input type="color" id="colorPuntero"/>
                 </div>
                 <div class="seccion-3">
-                    <input type="button" value="&#xf2ed" id="botonLimpiar"/>
+                    <input type="range" min="1" max="100" value="5" class="slider" id="rangoGrosor">
+                    <p>Grosor: <span id="valorGrosor"></span></p>
+                </div>
+                <div class="seccion-4">
+                    <p>Fondo: </p><input type="color" id="colorFondo"/>
+                </div>
+                <div class="seccion-5">
+                    <input class="boton-1" type="button" value="&#xf09b"/>
+                    <input class="boton-2" type="button" value="&#xf0e1"/>
+                    <br>
+                    <p class="nombre">by: <strong>Kenny</strong></p>
                 </div>
             </div>
             <div class="paper" id="recuadro">
