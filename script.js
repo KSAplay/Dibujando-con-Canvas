@@ -32,14 +32,14 @@ const botonLimpiar = document.getElementById('botonLimpiar');
 botonLimpiar.addEventListener("click", limpiarCanvas);
 
 const colorPunteroInput = document.getElementById('colorPuntero');
-colorPunteroInput.addEventListener("change", cambioColor);
+colorPunteroInput.addEventListener("input", cambioColor);
 
 const slider = document.getElementById('rangoGrosor');
 const valorGrosor = document.getElementById('valorGrosor');
 valorGrosor.innerHTML = slider.value;
 
 const colorFondoInput = document.getElementById('colorFondo');
-colorFondoInput.addEventListener("change", cambioFondo);
+colorFondoInput.addEventListener("input", cambioFondo);
 colorFondoInput.value = "#FFFFFF";
 
 slider.oninput = function() {
