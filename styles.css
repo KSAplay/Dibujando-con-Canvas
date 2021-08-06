@@ -18,12 +18,12 @@ body{
     background:#202124;
     overflow: hidden;
 }
-
+/* ------------- CANVAS PRINCIPAL Y AUXILIAR --------------- */
 canvas#dibujo{
     background-color: #FFF;
 }
 
-canvas#dibujo:hover, #canvasAuxiliar:hover{
+canvas:hover{
     cursor: crosshair;
 }
 
@@ -34,21 +34,20 @@ canvas#canvasAuxiliar{
     z-index: 1;
 }
 
-#prueba{
-    position: absolute;
-}
-
+/* ------------- TITULO DIBUJANDO CON CANVAS --------------- */
 .titulo{
     margin: 40px 0;
     text-align: center;
 }
 
+/* -------------------- BLOQUE PRINCIPAL ------------------- */
 .container{
     margin: 0 11%;
     text-align: center;
     height: 100vh;
 }
 
+/* ----------------- PANEL DE HERRAMIENTAS ----------------- */
 .tools{
     float: left;
     width: 20%;
@@ -57,6 +56,7 @@ canvas#canvasAuxiliar{
     background-color: #303134;
 }
 
+/* --------------------- PANEL DE DIBUJO ------------------- */
 .paper{
     position: relative;
     float: right;
@@ -66,8 +66,17 @@ canvas#canvasAuxiliar{
     background-color: #303134;
 }
 
-.seccion-1,.seccion-3{
-    padding: 20px 0 30px 0;
+/* ---------- SECCIONES DEL PANEL DE HERRAMIENTAS --------- */
+.seccion-1{
+    padding: 20px 0 10px 0;
+}
+
+.seccion-2{
+    padding: 0px 0 0px 0;
+}
+
+.seccion-3{
+    padding: 20px 0 20px 0;
 }
 
 .seccion-4{
@@ -75,19 +84,34 @@ canvas#canvasAuxiliar{
 }
 
 .seccion-5{
-    padding: 10px 27%;
+    padding: 10% 27%;
 }
 
-.tituloFondo, .tituloLimpiar{
-    float: left;
-    padding-right: 10px;
-}
-
+/* ------- TEXTOS INTERNOS DEL PANEL DE HERRAMIENTAS ------ */
 .tituloGrosor{
     text-align: center;
     padding-bottom: 5px;
 }
 
+.tituloFondo{
+    float: left;
+    padding-left: 20px;
+    padding-top: 9px;
+}
+
+.tituloLimpiar{
+    width: 100%;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 0;
+}
+
+.nombre{
+    text-align: center;
+    width: 100%;
+}
+
+/* ------------------------- BOTONES ------------------------- */
 .tool-button{
     margin: 10px 10px;
     width: 40px;
@@ -101,18 +125,18 @@ canvas#canvasAuxiliar{
     transition: opacity .5s;
 }
 
+#colorPuntero{
+    width: 75%;
+    height: 45px;
+    border: none;
+    background: transparent;
+}
+
 #colorFondo{
     width: 40px;
     height: 40px;
-    border-radius: 3px;
-    background-color: white;
-}
-
-#colorPuntero{
-    width: 151px;
-    height: 35px;
-    border-radius: 3px;
-    background-color: white;
+    border: none;
+    background: transparent;
 }
 
 input[type="button"]:hover, input[type="submit"]:hover{
@@ -126,6 +150,26 @@ input[type="color"]:hover{
     border-color: #d3d3d3;
 }
 
+.boton-1, .boton-2{
+    text-align: center;
+    font-family: "FontAwesome";
+    width: 40px;
+    height: 40px;
+    margin: 5px 5px;
+    border-radius: 50%;
+    background-color: white;
+}
+
+.boton-1{
+    float: left;
+    font-size: 30px;
+}
+.boton-2{
+    float: right;
+    font-size: 25px;
+}
+
+/* --------------------- SLIDER DEL GROSOR --------------------- */
 .slider {
     -webkit-appearance: none;
     width: 80%;
@@ -150,29 +194,4 @@ input[type="color"]:hover{
     border-radius: 50%;
     background: #4E7FFF;
     cursor: pointer;
-}
-
-.boton-1, .boton-2{
-    text-align: center;
-    font-family: "FontAwesome";
-    width: 40px;
-    height: 40px;
-    margin: 5px 5px;
-    border-radius: 50%;
-    background-color: white;
-}
-
-.boton-1{
-    float: left;
-    font-size: 30px;
-}
-.boton-2{
-    float: right;
-    font-size: 25px;
-}
-
-.nombre{
-    text-align: center;
-    width: 100%;
-    padding-top: 10px;
 }

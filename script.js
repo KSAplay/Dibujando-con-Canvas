@@ -71,6 +71,7 @@ var widthAux = 0, heightAux = 0;
 
 var creandoRectangulo = false, creandoCirculo = false, conRelleno = true;
 var borrando = false;
+var radio = 0;
 
 botonLapiz.style.background = colorSeleccion;
 
@@ -85,31 +86,19 @@ function clickDown(evento){
     pos.x = evento.layerX;
     pos.y = evento.layerY;
 
-    if(creandoRectangulo){
-        // Si se está creando un rectángulo, este sibuja uno pequeño al hacer click por primera vez
-        if(conRelleno){
-            
-        } else {
-            
-        }
-    }
-    else if(creandoCirculo){
-        // Si se está creando un círculo, este sibuja uno pequeño al hacer click por primera vez
-
-    }
-    else{
-        if(borrando){
-            ctx.strokeStyle = "#FFF";
-            ctx.globalCompositeOperation = "destination-out";
-            ctx.strokeStyle = colorPuntero;
-            ctx.lineWidth = grosorPuntero;
-            ctx.lineJoin = "round";
-            ctx.beginPath();
-            ctx.moveTo(pos.x,pos.y);
-            ctx.lineTo(pos.x+0.1,pos.y+0.1);
-            ctx.closePath();
-            ctx.stroke();
-        } else {
+    if(borrando){
+        ctx.strokeStyle = "#FFF";
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.strokeStyle = colorPuntero;
+        ctx.lineWidth = grosorPuntero;
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        ctx.moveTo(pos.x,pos.y);
+        ctx.lineTo(pos.x+0.1,pos.y+0.1);
+        ctx.closePath();
+        ctx.stroke();
+    } else {
+        if(!creandoCirculo && !creandoRectangulo){
             ctx.strokeStyle = colorPuntero;
             ctx.globalCompositeOperation = "source-over";
             ctx.strokeStyle = colorPuntero;
@@ -126,6 +115,7 @@ function clickDown(evento){
 // --------------------- CUANDO SE MUEVE EL MOUSE -------------------------- 
 function movimientoMouse(evento){
     if(estadoClick){
+        // PARA LOS RECTANGULOS
         if(creandoRectangulo){
             // limpiamos constantemente el canvas Auxiliar en cada movimiento del mouse
             // y dibujamos la figura en la ultima posicion que se quedó el mouse después del movimiento
@@ -147,12 +137,40 @@ function movimientoMouse(evento){
                 ctxAux.strokeRect(pos.x, pos.y, widthAux, heightAux);
                 ctxAux.closePath();
             }
-
+        // PARA LOS CIRCULOS
         } else if(creandoCirculo){
             // limpiamos constantemente el canvas Auxiliar en cada movimiento
-            // y dibujamos la digura en la ultima posicion de cada movimiento
+            // y dibujamos la figura en la ultima posicion de cada movimiento
             ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
-
+            if(conRelleno){
+                var aux_X = Math.abs(evento.layerX - pos.x);
+                var aux_Y = Math.abs(evento.layerY - pos.y);
+                if(aux_X > aux_Y){
+                    radio = aux_X;
+                } else {
+                    radio = aux_Y;
+                }
+                ctxAux.fillStyle = colorPuntero;
+                ctxAux.beginPath();
+                ctxAux.arc(pos.x, pos.y, radio, 0, 2 * Math.PI);
+                ctxAux.closePath();
+                ctxAux.fill();
+            } else {
+                var aux_X = Math.abs(evento.layerX - pos.x);
+                var aux_Y = Math.abs(evento.layerY - pos.y);
+                if(aux_X > aux_Y){
+                    radio = aux_X;
+                } else {
+                    radio = aux_Y;
+                }
+                ctxAux.lineWidth = grosorPuntero;
+                ctxAux.strokeStyle = colorPuntero;
+                ctxAux.lineJoin = 'round';
+                ctxAux.beginPath();
+                ctxAux.arc(pos.x, pos.y, radio, 0, 2 * Math.PI);
+                ctxAux.closePath();
+                ctxAux.stroke();
+            }
 
         } else {
             if(borrando){
@@ -224,9 +242,19 @@ function clickUp(){
         if(conRelleno){
             ctx.globalCompositeOperation = "source-over";
             ctx.fillStyle = colorPuntero;
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, radio, 0, 2 * Math.PI);
+            ctx.closePath();
+            ctx.fill();
         } else {
             ctx.globalCompositeOperation = "source-over";
             ctx.strokeStyle = colorPuntero;
+            ctx.lineWidth = grosorPuntero;
+            ctx.lineJoin = "round";
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, radio, 0, 2 * Math.PI);
+            ctx.closePath();
+            ctx.stroke();
         }
     }
 }
@@ -271,6 +299,7 @@ function borrar(){
 
 function crearRectangulo(){
     creandoCirculo = false;
+    borrando = false;
     if(!existeCanvasAuxiliar){
         añadirCanvasAuxiliar();
     }
@@ -302,6 +331,7 @@ function rectanguloSinRelleno(){
 
 function crearCirculo(){
     creandoRectangulo = false;
+    borrando = false;
     if(!existeCanvasAuxiliar){
         añadirCanvasAuxiliar();
     }
@@ -352,4 +382,3 @@ function deseleccionarBotones(){
     botonCircleFill.style.background = "#FFF";
     botonCircleStroke.style.background = "#FFF";
 }
-
