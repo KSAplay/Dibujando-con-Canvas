@@ -72,6 +72,12 @@ slider.addEventListener("mousedown", function(){cambiandoGrosorPuntero = true;},
 slider.addEventListener("mousemove", verGrosorPuntero, false);
 slider.addEventListener("mouseup", function(){cambiandoGrosorPuntero = false; ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);}, false);
 
+window.onkeydown = window.onkeyup = function(evento){
+    if(evento.keyCode == 16){
+        presionandoShift = evento.type == 'keydown';
+    }
+};
+
 // -------------------------------------------------------------------------
 //                              VARIABLES
 // -------------------------------------------------------------------------
@@ -92,10 +98,13 @@ var pos = { x: 0, y: 0 };
 
 var existeCanvasAuxiliar = false;
 var widthAux = 40, heightAux = 40;
+var posXRect = 0, posYRect = 0;
 
 var creandoRectangulo = false, creandoCirculo = false, conRelleno = true;
 var borrando = false;
-var radio = 50;
+var radio = 25;
+
+var presionandoShift = false;
 
 // -------------------------------------------------------------------------
 //                         FUNCIONES PRINCIPALES
@@ -136,91 +145,108 @@ function clickDown(evento){
 function movimientoMouse(evento){
     // limpiamos constantemente el canvas Auxiliar en cada movimiento del mouse
     ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
+    var posXaux = Math.abs(pos.x - evento.layerX);
+    var posYaux = Math.abs(pos.y - evento.layerY);
+    var movimientoLargo = false;
 
+    if(posXaux > 5 || posYaux > 5) {
+        movimientoLargo = true;
+    }
     // Verificamos si se hizo click o no
     if(estadoClick){
-        // Almacena en la variable que existe movimiento mientras se mantiene el click
-        realizoMovimientoMouse = true;
+        if(movimientoLargo){
+            // Almacena en la variable que existe movimiento mientras se mantiene el click
+            realizoMovimientoMouse = true;
+            // PARA LOS RECTANGULOS
+            if(creandoRectangulo){
+                // Obtenemos el largo y el alto del rectangulo
+                widthAux = (pos.x - evento.layerX) * 2;
+                heightAux = (pos.y - evento.layerY) * 2;
 
-        // PARA LOS RECTANGULOS
-        if(creandoRectangulo){
-            // Obtenemos el largo y el alto del rectangulo
-            widthAux = (pos.x - evento.layerX) * 2;
-            heightAux = (pos.y - evento.layerY) * 2;
-            // Dibujamos la figura en la ultima posicion que se quedó el mouse después del movimiento
-            if(conRelleno){
-                ctxAux.fillStyle = colorPuntero;
-                ctxAux.beginPath();
-                ctxAux.fillRect(evento.layerX, evento.layerY, widthAux, heightAux);
-                ctxAux.closePath();
-            } else {
-                ctxAux.lineWidth = grosorPuntero;
-                ctxAux.strokeStyle = colorPuntero;
-                ctxAux.lineJoin = 'round';
-                ctxAux.beginPath();
-                ctxAux.strokeRect(evento.layerX, evento.layerY, widthAux, heightAux);
-                ctxAux.closePath();
-            }
-        // PARA LOS CIRCULOS
-        } else if(creandoCirculo){
+                var posX, posY;
+                if(presionandoShift){
+                    if(Math.abs(widthAux) >= Math.abs(heightAux)){
+                        posX = evento.layerX;
+                        posY = evento.layerY - (widthAux - heightAux)/2;
+                        heightAux = widthAux;
+                    } else {
+                        posX = evento.layerX - (heightAux - widthAux)/2;
+                        posY = evento.layerY;
+                        widthAux = heightAux;
+                    }
+                } else {
+                    posX = evento.layerX;
+                    posY = evento.layerY;
+                }
+                console.log("W: "+widthAux+" - H: "+heightAux);
+                // Dibujamos la figura en la ultima posicion que se quedó el mouse después del movimiento
+                if(conRelleno){
+                    ctxAux.fillStyle = colorPuntero;
+                    ctxAux.beginPath();
+                    ctxAux.fillRect(posX, posY, widthAux, heightAux);
+                    ctxAux.closePath();
+                } else {
+                    ctxAux.lineWidth = grosorPuntero;
+                    ctxAux.strokeStyle = colorPuntero;
+                    ctxAux.lineJoin = 'round';
+                    ctxAux.beginPath();
+                    ctxAux.strokeRect(posX, posY, widthAux, heightAux);
+                    ctxAux.closePath();
+                }
+            // PARA LOS CIRCULOS
+            } else if(creandoCirculo){
+                var aux_X = Math.abs(pos.x - evento.layerX);
+                var aux_Y = Math.abs(pos.y - evento.layerY);
 
-            // Dibujamos la figura en la ultima posicion de cada movimiento
-            if(conRelleno){
-                var aux_X = Math.abs(evento.layerX - pos.x);
-                var aux_Y = Math.abs(evento.layerY - pos.y);
                 if(aux_X > aux_Y){
                     radio = aux_X;
                 } else {
                     radio = aux_Y;
                 }
-                ctxAux.fillStyle = colorPuntero;
-                ctxAux.beginPath();
-                ctxAux.arc(pos.x, pos.y, radio, 0, 2 * Math.PI);
-                ctxAux.closePath();
-                ctxAux.fill();
-            } else {
-                var aux_X = Math.abs(evento.layerX - pos.x);
-                var aux_Y = Math.abs(evento.layerY - pos.y);
-                if(aux_X > aux_Y){
-                    radio = aux_X;
+                // Dibujamos la figura en la ultima posicion de cada movimiento
+                if(conRelleno){
+                    ctxAux.fillStyle = colorPuntero;
+                    ctxAux.beginPath();
+                    ctxAux.arc(pos.x, pos.y, radio, 0, 2 * Math.PI);
+                    ctxAux.closePath();
+                    ctxAux.fill();
                 } else {
-                    radio = aux_Y;
+                    ctxAux.lineWidth = grosorPuntero;
+                    ctxAux.strokeStyle = colorPuntero;
+                    ctxAux.lineJoin = 'round';
+                    ctxAux.beginPath();
+                    ctxAux.arc(pos.x, pos.y, radio, 0, 2 * Math.PI);
+                    ctxAux.closePath();
+                    ctxAux.stroke();
                 }
-                ctxAux.lineWidth = grosorPuntero;
-                ctxAux.strokeStyle = colorPuntero;
-                ctxAux.lineJoin = 'round';
-                ctxAux.beginPath();
-                ctxAux.arc(pos.x, pos.y, radio, 0, 2 * Math.PI);
-                ctxAux.closePath();
-                ctxAux.stroke();
-            }
-        } else {
-            if(borrando){
-                //ctx.strokeStyle = "#FFF";
-                ctx.lineWidth = grosorPuntero;
-                ctx.globalCompositeOperation = "destination-out";
-                ctx.beginPath();
-                ctx.moveTo(pos.x,pos.y);
-                ctx.lineTo(evento.layerX, evento.layerY);
-                ctx.closePath();
-                ctx.stroke();
-                // Reestablecemos
-                pos.x = evento.layerX;
-                pos.y = evento.layerY;
             } else {
-                //limpiarCanvas();  // Descomentar para probar  // Ejemplo de como se vería si se eliminara constantemente en el canvas principal
-                ctx.strokeStyle = colorPuntero;
-                ctx.lineWidth = grosorPuntero;
-                ctx.globalCompositeOperation = "source-over";
-                ctx.lineJoin = "round";
-                ctx.beginPath();
-                ctx.moveTo(pos.x,pos.y);
-                ctx.lineTo(evento.layerX, evento.layerY);
-                ctx.closePath();
-                ctx.stroke();
-                // Reestablecemos
-                pos.x = evento.layerX;
-                pos.y = evento.layerY;
+                if(borrando){
+                    //ctx.strokeStyle = "#FFF";
+                    ctx.lineWidth = grosorPuntero;
+                    ctx.globalCompositeOperation = "destination-out";
+                    ctx.beginPath();
+                    ctx.moveTo(pos.x,pos.y);
+                    ctx.lineTo(evento.layerX, evento.layerY);
+                    ctx.closePath();
+                    ctx.stroke();
+                    // Reestablecemos
+                    pos.x = evento.layerX;
+                    pos.y = evento.layerY;
+                } else {
+                    //limpiarCanvas();  // Descomentar para probar  // Ejemplo de como se vería si se eliminara constantemente en el canvas principal
+                    ctx.strokeStyle = colorPuntero;
+                    ctx.lineWidth = grosorPuntero;
+                    ctx.globalCompositeOperation = "source-over";
+                    ctx.lineJoin = "round";
+                    ctx.beginPath();
+                    ctx.moveTo(pos.x,pos.y);
+                    ctx.lineTo(evento.layerX, evento.layerY);
+                    ctx.closePath();
+                    ctx.stroke();
+                    // Reestablecemos
+                    pos.x = evento.layerX;
+                    pos.y = evento.layerY;
+                }
             }
         }
     } else {    // ARREGLAR EL DESBORDE CUANDO SE LLEGA AL LIMITE DEL CANVAS
@@ -228,19 +254,36 @@ function movimientoMouse(evento){
         //console.log("X: "+pos.x+" - Y: "+pos.y+" - Width: "+widthAux+" - Height: "+heightAux+" - Canvas auxiliar: "+existeCanvasAuxiliar);
         
         if(creandoRectangulo){
+            posXRect = evento.layerX - widthAux/2;
+            posYRect = evento.layerY - heightAux/2;
             if(conRelleno){
                 ctxAux.fillStyle = colorPuntero;
                 ctxAux.beginPath();
-                ctxAux.fillRect(evento.layerX, evento.layerY, widthAux, heightAux);
+                ctxAux.fillRect(posXRect, posYRect, widthAux, heightAux);
                 ctxAux.closePath();
             } else {
-
+                ctxAux.lineWidth = grosorPuntero;
+                ctxAux.strokeStyle = colorPuntero;
+                ctxAux.lineJoin = 'round';
+                ctxAux.beginPath();
+                ctxAux.strokeRect(posXRect, posYRect, widthAux, heightAux);
+                ctxAux.closePath();
             }
         } else if(creandoCirculo){
             if(conRelleno){
-
+                ctxAux.fillStyle = colorPuntero;
+                ctxAux.beginPath();
+                ctxAux.arc(evento.layerX, evento.layerY, radio, 0, 2 * Math.PI);
+                ctxAux.closePath();
+                ctxAux.fill();
             } else {
-
+                ctxAux.lineWidth = grosorPuntero;
+                ctxAux.strokeStyle = colorPuntero;
+                ctxAux.lineJoin = 'round';
+                ctxAux.beginPath();
+                ctxAux.arc(evento.layerX, evento.layerY, radio, 0, 2 * Math.PI);
+                ctxAux.closePath();
+                ctxAux.stroke();
             }
         } else if (borrando){
             ctxAux.globalCompositeOperation = "source-over";
@@ -267,23 +310,20 @@ function movimientoMouse(evento){
 }
 // ----------------------- CUANDO SE SUELTA EL CLIC ------------------------ 
 function clickUp(){
-    // Cambiamos el estado del clic a falso
-    estadoClick = false;
-    if(!realizoMovimientoMouse){
+    if(estadoClick && !realizoMovimientoMouse){
         // Verifica si se esta creando alguna figura (Rectangulo o Circulo, con relleno o sin relleno)
         if(creandoRectangulo){
             // Limpiamos el canvasAuxiliar para que no se visualice la ultima figura
             ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
+            //posXRect = evento.layerX - widthAux/2;
+            //posYRect = evento.layerY - heightAux/2;
             // Aqui dibujamos el rectangulo en el canvas principal con los datos obtenidos con el canvasAuxiliar
             if(conRelleno){
                 ctx.globalCompositeOperation = "source-over";
                 ctx.fillStyle = colorPuntero;
                 ctx.beginPath();
-                ctx.fillRect(pos.x, pos.y, widthAux, heightAux);
+                ctx.fillRect(posXRect, posYRect, widthAux, heightAux);
                 ctx.closePath();
-                // Reestablecemos a 0
-                //widthAux = 0;
-                //heightAux = 0;
             }
             else {
                 ctx.globalCompositeOperation = "source-over";
@@ -291,11 +331,8 @@ function clickUp(){
                 ctx.lineWidth = grosorPuntero;
                 ctx.lineJoin = "round";
                 ctx.beginPath();
-                ctx.strokeRect(pos.x, pos.y, widthAux, heightAux);
+                ctx.strokeRect(posXRect, posYRect, widthAux, heightAux);
                 ctx.closePath();
-                // Reestablecemos a 0
-                widthAux = 0;
-                heightAux = 0;
             }
         }
         else if(creandoCirculo){
@@ -322,6 +359,8 @@ function clickUp(){
     } else {
         realizoMovimientoMouse = false;
     }
+    // Cambiamos el estado del clic a falso
+    estadoClick = false;
 }
 
 // -------------------------------------------------------------------------
@@ -338,7 +377,14 @@ function verGrosorPuntero(){
     if(cambiandoGrosorPuntero){
         ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
         if(creandoRectangulo && !conRelleno){
-
+            var posXRectAux = canvas.width/2 - widthAux/2;
+            var posYRectAux = canvas.height/2 - heightAux/2;
+            ctxAux.lineWidth = slider.value;
+            ctxAux.strokeStyle = colorPuntero;
+            ctxAux.lineJoin = 'round';
+            ctxAux.beginPath();
+            ctxAux.strokeRect(posXRectAux, posYRectAux, widthAux, heightAux);
+            ctxAux.closePath();
         } else if(creandoCirculo && !conRelleno){
             ctxAux.lineWidth = slider.value;
             ctxAux.strokeStyle = colorPuntero;
@@ -357,7 +403,6 @@ function verGrosorPuntero(){
             ctxAux.lineTo(canvas.width/2+0.01,canvas.height/2+0.01);
             ctxAux.closePath();
             ctxAux.stroke();
-        
         } else if(!creandoRectangulo && !creandoCirculo){
             ctxAux.globalCompositeOperation = "source-over";
             ctxAux.strokeStyle = colorPuntero;
