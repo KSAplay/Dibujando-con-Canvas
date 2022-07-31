@@ -1,6 +1,10 @@
 // -------------------------------------------------------------------------
 //                                CANVAS
 // -------------------------------------------------------------------------
+
+// Paper
+const paper = document.getElementById('recuadro');
+
 // Canvas y Contexto
 const canvas = document.getElementById('dibujo');
 const ctx = canvas.getContext('2d');
@@ -8,12 +12,27 @@ const ctx = canvas.getContext('2d');
 // Canvas y Contexto Auxiliar
 const canvasAuxiliar = document.createElement('canvas');
 canvasAuxiliar.id = 'canvasAuxiliar';
-canvasAuxiliar.width = 900;
-canvasAuxiliar.height = 560;
+canvasAuxiliar.width = paper.offsetWidth;
+canvasAuxiliar.height = paper.offsetHeight;
+
 document.getElementById('recuadro').appendChild(canvasAuxiliar);
 
 const canvasAux = document.getElementById('canvasAuxiliar');
 const ctxAux = canvasAux.getContext('2d');
+
+// Ventana Alerta y botones
+const ventanaAlerta = document.createElement('div');
+const botonSi = document.createElement('button');
+const botonNo = document.createElement('button');
+
+ventanaAlerta.id = 'ventanaAlerta';
+ventanaAlerta.innerHTML += '¿Quieres eliminar todo?<br><br>';
+
+botonSi.id = 'btnSi';
+botonSi.innerHTML += 'Si';
+
+botonNo.id = 'btnNo';
+botonNo.innerHTML += 'No';
 
 // -------------------------------------------------------------------------
 //                               INPUTS
@@ -37,7 +56,7 @@ const botonCircleStroke = document.getElementById('botonCircleStroke');
 botonCircleStroke.addEventListener("click", function(){crearCirculo(false);}, false);
 
 const botonLimpiar = document.getElementById('botonLimpiar');
-botonLimpiar.addEventListener("click", limpiarCanvas, false);
+botonLimpiar.addEventListener("click", preguntarLimpiarCanvas, false);
 
 const colorPunteroInput = document.getElementById('colorPuntero');
 colorPunteroInput.addEventListener("input", cambioColor, false);
@@ -72,25 +91,26 @@ slider.addEventListener("mousedown", function(){cambiandoGrosorPuntero = true;},
 slider.addEventListener("mousemove", verGrosorPuntero, false);
 slider.addEventListener("mouseup", function(){cambiandoGrosorPuntero = false; ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);}, false);
 
+// Eventos de la ventana del navegador
 window.onkeydown = window.onkeyup = function(evento){
     if(evento.keyCode == 16){
         presionandoShift = evento.type == 'keydown';
-    }
-};
+    } };
+//window.addEventListener("resize", resize);   // Si se usa este comando, el canvas se ajusta a la ventana pero se elimina el dibujo
 
 // -------------------------------------------------------------------------
 //                              VARIABLES
 // -------------------------------------------------------------------------
 // Tamaño del canvas
-var width = 900;
-var height = 560;
+var width = paper.offsetWidth;
+var height = paper.offsetHeight;
 canvas.width = width;
 canvas.height = height;
 
 var estadoClick = false, realizoMovimientoMouse = false;   // Variables de apoyo en el click y movimiento del mouse
 var colorPuntero = "#000000";    // Color del lapiz al inicio
-var colorFondo = "#FFFFFF"      // Color del fondo al inicio
-var colorSeleccion = "#4E7FFF", colorDeseleccion = "#FFF";  // Colores de los botones seleccionados y deseleccionados
+var colorFondo = "#FFFFFF";      // Color del fondo al inicio
+var colorSeleccion = "#1E1E1E", colorDeseleccion = "#454545";  // Colores de los botones seleccionados y deseleccionados
 botonLapiz.style.background = colorSeleccion;
 
 var grosorPuntero = slider.value, cambiandoGrosorPuntero = false;
@@ -104,14 +124,13 @@ var creandoRectangulo = false, creandoCirculo = false, conRelleno = true;
 var borrando = false;
 var radio = 25;
 
-var presionandoShift = false;
+var presionandoShift = false, ventanaAlertaActiva = false, dibujandoLineaRecta = false, lineaRectaEnX = false;
 
 // -------------------------------------------------------------------------
 //                         FUNCIONES PRINCIPALES
 // -------------------------------------------------------------------------
 // --------- CUANDO SE PRESIONA EL CLIC (ocurre una vez por clic) ---------- 
 function clickDown(evento){
-
     estadoClick = true;
     // Guarda la posicion del mouse cuando se hace el click, tanto en X como en Y
     pos.x = evento.layerX;
@@ -178,7 +197,6 @@ function movimientoMouse(evento){
                     posX = evento.layerX;
                     posY = evento.layerY;
                 }
-                console.log("W: "+widthAux+" - H: "+heightAux);
                 // Dibujamos la figura en la ultima posicion que se quedó el mouse después del movimiento
                 if(conRelleno){
                     ctxAux.fillStyle = colorPuntero;
@@ -233,26 +251,56 @@ function movimientoMouse(evento){
                     pos.x = evento.layerX;
                     pos.y = evento.layerY;
                 } else {
-                    //limpiarCanvas();  // Descomentar para probar  // Ejemplo de como se vería si se eliminara constantemente en el canvas principal
-                    ctx.strokeStyle = colorPuntero;
-                    ctx.lineWidth = grosorPuntero;
-                    ctx.globalCompositeOperation = "source-over";
-                    ctx.lineJoin = "round";
-                    ctx.beginPath();
-                    ctx.moveTo(pos.x,pos.y);
-                    ctx.lineTo(evento.layerX, evento.layerY);
-                    ctx.closePath();
-                    ctx.stroke();
-                    // Reestablecemos
-                    pos.x = evento.layerX;
-                    pos.y = evento.layerY;
+                    if(presionandoShift){
+                        ctx.strokeStyle = colorPuntero;
+                        ctx.lineWidth = grosorPuntero;
+                        ctx.globalCompositeOperation = "source-over";
+                        ctx.lineJoin = "round";
+                        ctx.beginPath();
+                        if(!dibujandoLineaRecta){
+                            var auxDistanciaX = Math.abs(pos.x - evento.layerX);
+                            var auxDistanciaY = Math.abs(pos.y - evento.layerY);
+                            if(auxDistanciaX > auxDistanciaY){
+                                lineaRectaEnX = true;
+                            } else {
+                                lineaRectaEnX = false;
+                            }
+                            dibujandoLineaRecta = true;
+                        }
+                        if(lineaRectaEnX){
+                            ctx.moveTo(pos.x,pos.y);
+                            ctx.lineTo(evento.layerX, pos.y);
+                            ctx.closePath();
+                            ctx.stroke();
+                            // Reestablecemos
+                            pos.x = evento.layerX;
+                        } else {
+                            ctx.moveTo(pos.x,pos.y);
+                            ctx.lineTo(pos.x, evento.layerY);
+                            ctx.closePath();
+                            ctx.stroke();
+                            // Reestablecemos
+                            pos.y = evento.layerY;
+                        }
+                    } else {
+                        ctx.strokeStyle = colorPuntero;
+                        ctx.lineWidth = grosorPuntero;
+                        ctx.globalCompositeOperation = "source-over";
+                        ctx.lineJoin = "round";
+                        ctx.beginPath();
+                        ctx.moveTo(pos.x,pos.y);
+                        ctx.lineTo(evento.layerX, evento.layerY);
+                        ctx.closePath();
+                        ctx.stroke();
+                        // Reestablecemos
+                        pos.x = evento.layerX;
+                        pos.y = evento.layerY;
+                    }
                 }
             }
         }
-    } else {    // ARREGLAR EL DESBORDE CUANDO SE LLEGA AL LIMITE DEL CANVAS
-        // Mostramos como se vería el circulo y el rectángulo
-        //console.log("X: "+pos.x+" - Y: "+pos.y+" - Width: "+widthAux+" - Height: "+heightAux+" - Canvas auxiliar: "+existeCanvasAuxiliar);
-        
+    } else {
+        // Mostramos como se vería el puntero cuando no se está presionando
         if(creandoRectangulo){
             posXRect = evento.layerX - widthAux/2;
             posYRect = evento.layerY - heightAux/2;
@@ -310,6 +358,7 @@ function movimientoMouse(evento){
 }
 // ----------------------- CUANDO SE SUELTA EL CLIC ------------------------ 
 function clickUp(){
+    dibujandoLineaRecta = false;
     if(estadoClick && !realizoMovimientoMouse){
         // Verifica si se esta creando alguna figura (Rectangulo o Circulo, con relleno o sin relleno)
         if(creandoRectangulo){
@@ -358,6 +407,7 @@ function clickUp(){
         }
     } else {
         realizoMovimientoMouse = false;
+        ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
     }
     // Cambiamos el estado del clic a falso
     estadoClick = false;
@@ -424,10 +474,34 @@ function cambioFondo()
     canvas.style.background = colorFondo;
 }
 
-// Funcion para limpiar el canvas original
+// Funcion para aparecer la alerta de Limpiar Canvas
+function preguntarLimpiarCanvas()
+{
+    if(!ventanaAlertaActiva){
+        ventanaAlertaActiva = true;
+        document.getElementById('contenedor').appendChild(ventanaAlerta);
+        document.getElementById('ventanaAlerta').appendChild(botonSi);
+        document.getElementById('ventanaAlerta').appendChild(botonNo);
+
+        botonSi.addEventListener('mousedown', limpiarCanvas, false);
+        botonNo.addEventListener('mousedown', borrarAlerta, false);
+    }
+}
+
+// Función para limpiar el canvas principal
 function limpiarCanvas()
 {
+    // Cerramos la ventana
+    borrarAlerta();
+    // Borramos le canvas
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+}
+
+// Función para borrar la ventana de alerta
+function borrarAlerta()
+{
+    ventanaAlertaActiva = false;
+    ventanaAlerta.remove();
 }
 
 // Función de activar el dibujo con el lápiz
@@ -485,4 +559,13 @@ function deseleccionarBotones(){
     botonBorrar.style.background = colorDeseleccion;
     botonCircleFill.style.background = colorDeseleccion;
     botonCircleStroke.style.background = colorDeseleccion;
+}
+
+// Función para ajustar el canvas al tamaño de la ventana
+function resize(){
+    var window_height = window.innerHeight;
+    var window_width = window.innerWidth;
+
+    canvas.width = window_width;
+    canvas.height = window_height;
 }

@@ -10,7 +10,7 @@ html{
     -moz-osx-font-smoothing: grayscale
 }
 
-body{
+div.container{
     font-family: 'Lato', sans-serif;
     color: #F5F4F6;
     width: 100%;
@@ -21,6 +21,7 @@ body{
 /* ------------- CANVAS PRINCIPAL Y AUXILIAR --------------- */
 canvas#dibujo{
     background-color: #FFF;
+    height: 100vh;
 }
 
 canvas:hover{
@@ -31,18 +32,44 @@ canvas#canvasAuxiliar{
     position: absolute;
     left: 0;
     top: 0;
-    z-index: 1;
+    z-index: 10;
+}
+/* ------------------ VENTANA DE ALERTA  ------------------- */
+div#ventanaAlerta{
+    position: absolute;
+    background-color: #31302E;
+    width: 250px;
+    height: 80px;
+    padding: 30px 15px;
+    border-radius: 10px;
+    border-width: 10px;
+    border-color: #1E1E2C;
+    z-index: 11;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 35vh 90vh;
 }
 
-/* ------------- TITULO DIBUJANDO CON CANVAS --------------- */
+button#btnSi,#btnNo{
+    background-color: #FFF;
+    color: #272727;
+    font-weight: bold;
+    width: 70px;
+    height: 30px;
+    margin: 5px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* ------------- TITULO DIBUJANDO CON CANVAS --------------- *
 .titulo{
     margin: 40px 0;
     text-align: center;
 }
-
+*/
 /* -------------------- BLOQUE PRINCIPAL ------------------- */
 .container{
-    margin: 0 11%;
     text-align: center;
     height: 100vh;
 }
@@ -50,20 +77,20 @@ canvas#canvasAuxiliar{
 /* ----------------- PANEL DE HERRAMIENTAS ----------------- */
 .tools{
     float: left;
-    width: 20%;
-    height: 560px;
-    margin: 0 0;
-    background-color: #303134;
+    width: 12%;
+    height: 100%;
+    margin: 0;
+    background-color: #303030;
 }
 
 /* --------------------- PANEL DE DIBUJO ------------------- */
 .paper{
     position: relative;
     float: right;
-    height: 560px;
-    width: 900px;
-    margin: 0 0;
-    background-color: #303134;
+    width: 88%;
+    height: 100vh;
+    margin: 0;
+    background-color: #202124;
 }
 /* Para que no se seleccione cuando se desliza */
 .paper *{
@@ -80,19 +107,20 @@ canvas#canvasAuxiliar{
 }
 
 .seccion-2{
-    padding: 0px 0 0px 0;
+    padding: 0;
 }
 
 .seccion-3{
-    padding: 20px 0 20px 0;
+    padding: 20px 0;
 }
 
 .seccion-4{
-    padding: 0 20%;
+    padding: 0;
 }
 
 .seccion-5{
-    padding: 10% 27%;
+    padding: 20px 30px;
+    margin-bottom: 40px;
 }
 
 /* ------- TEXTOS INTERNOS DEL PANEL DE HERRAMIENTAS ------ */
@@ -102,21 +130,23 @@ canvas#canvasAuxiliar{
 }
 
 .tituloFondo{
-    float: left;
-    padding-left: 20px;
-    padding-top: 9px;
+    text-align: center;
+    width: 100%;
+    padding: 0;
 }
 
 .tituloLimpiar{
-    width: 100%;
     text-align: center;
+    width: 100%;
     padding-top: 20px;
     padding-bottom: 0;
 }
 
 .nombre{
+    float: bottom;
     text-align: center;
     width: 100%;
+    height: 50px;
 }
 
 /* ------------------------- BOTONES ------------------------- */
@@ -125,37 +155,37 @@ canvas#canvasAuxiliar{
     width: 40px;
     height: 40px;
     border-radius: 3px;
-    background-color: white;
+    background-color: #454545;
+    color: white;
     font-family: "FontAwesome";
-    font-size: 25px;
+    font-size: 20px;
     opacity: 1;
     transition: background-color .1s;
     transition: opacity .5s;
 }
 
-#colorPuntero{
+input#colorPuntero{
+    border: none;
     width: 75%;
     height: 45px;
-    border: none;
     background: transparent;
 }
 
-#colorFondo{
-    width: 40px;
-    height: 40px;
+input#colorFondo{
     border: none;
+    width: 75%;
+    height: 40px;
     background: transparent;
 }
 
 input[type="button"]:hover, input[type="submit"]:hover{
     cursor: pointer;
-    background-color: #d3d3d3;
     opacity: 0.7;
 }
 
 input[type="color"]:hover{
     cursor: pointer;
-    border-color: #d3d3d3;
+    /* border-color: #d3d3d3; */
 }
 
 .boton-1, .boton-2{
@@ -163,7 +193,7 @@ input[type="color"]:hover{
     font-family: "FontAwesome";
     width: 40px;
     height: 40px;
-    margin: 5px 5px;
+    margin: 5px 5%;
     border-radius: 50%;
     background-color: white;
 }
@@ -180,7 +210,7 @@ input[type="color"]:hover{
 /* --------------------- SLIDER DEL GROSOR --------------------- */
 .slider {
     -webkit-appearance: none;
-    width: 80%;
+    width: 75%;
     height: 8px;
     border-radius: 5px;
     background: white;
