@@ -59,7 +59,13 @@ button#btnSi,#btnNo{
     height: 30px;
     margin: 5px 15px;
     border-radius: 5px;
+    transition: opacity .3s;
+}
+button#btnSi:hover,#btnNo:hover{
     cursor: pointer;
+    color: black;
+    opacity: 0.7;
+
 }
 
 /* ------------- TITULO DIBUJANDO CON CANVAS --------------- *
@@ -161,7 +167,7 @@ button#btnSi,#btnNo{
     font-size: 20px;
     opacity: 1;
     transition: background-color .1s;
-    transition: opacity .5s;
+    transition: opacity .3s;
 }
 
 input#colorPuntero{

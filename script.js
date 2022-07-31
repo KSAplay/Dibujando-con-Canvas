@@ -26,7 +26,7 @@ const botonSi = document.createElement('button');
 const botonNo = document.createElement('button');
 
 ventanaAlerta.id = 'ventanaAlerta';
-ventanaAlerta.innerHTML += '¿Quieres eliminar todo?<br><br>';
+ventanaAlerta.innerHTML += '¿Quieres limpiar todo el lienzo?<br><br>';
 
 botonSi.id = 'btnSi';
 botonSi.innerHTML += 'Si';
@@ -57,6 +57,9 @@ botonCircleStroke.addEventListener("click", function(){crearCirculo(false);}, fa
 
 const botonLimpiar = document.getElementById('botonLimpiar');
 botonLimpiar.addEventListener("click", preguntarLimpiarCanvas, false);
+
+const botonGuardar = document.getElementById('botonGuardar');
+botonGuardar.addEventListener("click", guardarLienzo, false);
 
 const colorPunteroInput = document.getElementById('colorPuntero');
 colorPunteroInput.addEventListener("input", cambioColor, false);
@@ -416,6 +419,28 @@ function clickUp(){
 // -------------------------------------------------------------------------
 //                         FUNCIONES SECUNDARIAS
 // -------------------------------------------------------------------------
+// Función para guardar el lienzo en una imagen
+function guardarLienzo(){
+
+    // Copiamos el canvas principal al canvas auxliar y limpiamos el canvas principal
+    ctxAux.drawImage(canvas, 0, 0);
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    // Llenamos un cuadrado a tamaño del canvas del color seleccionado
+    ctx.beginPath();
+    ctx.rect(0, 0, width, height);
+    ctx.fillStyle = colorFondo;
+    ctx.fill();
+    // Regresamos lo copiado del canvas auxiliar al canvas principal y limpiamos el canvas auxiliar
+    ctx.drawImage(canvasAuxiliar, 0, 0);
+    ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
+
+    // Creamos el link, generamos la imagen y lo guardamos.
+    var link = document.createElement('a');
+    link.href = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+	link.download = 'mi-dibujo.png';
+    link.click();
+}
+
 // Función para cambiar de color el puntero
 function cambioColor()
 {
@@ -470,6 +495,7 @@ function verGrosorPuntero(){
 // Función para cambiar de color del fondo una vez que se selecciona el color
 function cambioFondo()
 {
+    // Obtenemos el valor del color
     colorFondo = colorFondoInput.value;
     canvas.style.background = colorFondo;
 }
