@@ -37,13 +37,11 @@ canvas#canvasAuxiliar{
 /* ------------------ VENTANA DE ALERTA  ------------------- */
 div#ventanaAlerta{
     position: absolute;
-    background-color: #31302E;
+    background-color: #202020;
     width: 250px;
     height: 80px;
     padding: 30px 15px;
     border-radius: 10px;
-    border-width: 10px;
-    border-color: #1E1E2C;
     z-index: 11;
     justify-content: center;
     align-items: center;
@@ -68,6 +66,37 @@ button#btnSi:hover,#btnNo:hover{
 
 }
 
+div#mensajeCopiado{
+    position: absolute;
+    background-color: #3BA55D;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    width: 100px;
+    height: 40px;
+    border-radius: 10px;
+    z-index: 13;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    margin: 53vh 0vh 0vh 5.5vh;
+}
+
+div#mensajeCopiado:after {
+    content: "";
+    position:absolute;
+    margin-top: 0px;
+    margin-left: 0px;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-bottom: 12px solid #3BA55D;
+    transform:rotate(-180deg);
+    z-index: 12;
+    right: 37px; 
+    top: 40px;
+}
+
 /* ------------- TITULO DIBUJANDO CON CANVAS --------------- *
 .titulo{
     margin: 40px 0;
@@ -86,7 +115,7 @@ button#btnSi:hover,#btnNo:hover{
     width: 12%;
     height: 100%;
     margin: 0;
-    background-color: #303030;
+    background-color: #323232;
 }
 
 /* --------------------- PANEL DE DIBUJO ------------------- */
@@ -96,7 +125,7 @@ button#btnSi:hover,#btnNo:hover{
     width: 88%;
     height: 100vh;
     margin: 0;
-    background-color: #202124;
+    background-color: #202020;
 }
 /* Para que no se seleccione cuando se desliza */
 .paper *{
@@ -109,15 +138,15 @@ button#btnSi:hover,#btnNo:hover{
 
 /* ---------- SECCIONES DEL PANEL DE HERRAMIENTAS --------- */
 .seccion-1{
-    padding: 20px 0 10px 0;
+    padding: 10px 0px;
 }
 
 .seccion-2{
-    padding: 0;
+    padding: 10px 7px;
 }
 
 .seccion-3{
-    padding: 20px 0;
+    padding: 0px 0px;
 }
 
 .seccion-4{
@@ -125,6 +154,7 @@ button#btnSi:hover,#btnNo:hover{
 }
 
 .seccion-5{
+    margin-top: 30px;
     padding: 20px 30px;
     margin-bottom: 40px;
 }
@@ -132,13 +162,14 @@ button#btnSi:hover,#btnNo:hover{
 /* ------- TEXTOS INTERNOS DEL PANEL DE HERRAMIENTAS ------ */
 .tituloGrosor{
     text-align: center;
-    padding-bottom: 5px;
+    padding: 0px 0px 5px 20px;
 }
 
 .tituloFondo{
-    text-align: center;
-    width: 100%;
-    padding: 0;
+    display: flex;
+    height: 40px;
+    align-items: center;
+    padding-left: 45px;
 }
 
 .tituloLimpiar{
@@ -157,7 +188,7 @@ button#btnSi:hover,#btnNo:hover{
 
 /* ------------------------- BOTONES ------------------------- */
 .tool-button{
-    margin: 10px 10px;
+    margin: 5.5px 4px;
     width: 40px;
     height: 40px;
     border-radius: 3px;
@@ -170,18 +201,44 @@ button#btnSi:hover,#btnNo:hover{
     transition: opacity .3s;
 }
 
+.color-button{
+    margin: 2px 0px;
+    width: 26px;
+    height: 26px;
+    border-radius: 2px;
+    background-color: white;
+    font-family: "FontAwesome";
+    font-size: 22px;
+    opacity: 1;
+    transition: background-color .1s;
+    transition: opacity .3s;
+}
+
+input#color-button-1{color: #000000;}
+input#color-button-2{color: #ED1C24;}
+input#color-button-3{color: #FFC90E;}
+input#color-button-4{color: #22B14C;}
+input#color-button-5{color: #3F48CC;}
+input#color-button-6{color: #FFFFFF;}
+input#color-button-7{color: #FF7F27;}
+input#color-button-8{color: #FFF200;}
+input#color-button-9{color: #B5E61D;}
+input#color-button-10{color: #00A2E8;}
+
+
 input#colorPuntero{
+    margin: 8px 0px;
     border: none;
-    width: 75%;
-    height: 45px;
+    width: 80%;
+    height: 40px;
     background: transparent;
 }
 
 input#colorFondo{
     border: none;
-    width: 75%;
+    width: 40px;
     height: 40px;
-    background: transparent;
+    margin-left: 10px;
 }
 
 input[type="button"]:hover, input[type="submit"]:hover{
@@ -211,6 +268,18 @@ input[type="color"]:hover{
 .boton-2{
     float: right;
     font-size: 25px;
+}
+/* --------------------- INPUT DEL GROSOR --------------------- */
+input#valorGrosor{
+    margin-left: 5px;
+    font-family: 'Lato', sans-serif;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 2px;
+    border-color: white;
+    border-width: 2px;
 }
 
 /* --------------------- SLIDER DEL GROSOR --------------------- */

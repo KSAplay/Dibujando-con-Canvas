@@ -15,29 +15,44 @@
         <div class="container" id="contenedor">
             <div class="tools">
                 <div class="seccion-1">
-                    <input class="tool-button" type="button" value="&#xf303" id="botonLapiz" title="Lápiz"/>
-                    <input class="tool-button" type="button" value="&#xf12d" id="botonBorrar" title="Borrador"/>
+                    <input class="tool-button" type="button" value="&#xf1fc;" id="botonPincel" title="Lápiz"/>
+                    <input class="tool-button" type="button" value="&#xf45c;" id="botonRectFill" title="Rectángulo con relleno"/>
+                    <input class="tool-button" type="button" value="&#11044;" id="botonCircleFill" title="Círculo con relleno"/>
                     <br>
-                    <input class="tool-button" type="button" value="&#xf45c" id="botonRectFill" title="Rectángulo con relleno"/>
-                    <input class="tool-button" type="button" value="&#xf0c8" id="botonRectStroke" title="Rectángulo sin relleno"/>
+                    <input class="tool-button" type="button" value="&#xf12d;" id="botonBorrar" title="Borrador"/>
+                    <input class="tool-button" type="button" value="&#xf0c8;" id="botonRectStroke" title="Rectángulo sin relleno"/>
+                    <input class="tool-button" type="button" value="&#xf111;" id="botonCircleStroke" title="Círculo sin relleno"/>
                     <br>
-                    <input class="tool-button" type="button" value="&#11044" id="botonCircleFill" title="Círculo con relleno"/>
-                    <input class="tool-button" type="button" value="&#xf111" id="botonCircleStroke" title="Círculo sin relleno"/>
+                    <input class="tool-button" type="button" value="&#xf576;" id="botonRellenar" title="Rellenar"/>
+                    <input class="tool-button" type="button" value="&#xf1fb;" id="botonSelector" title="Selector color"/>
+                    <input class="tool-button" type="button" value="&#xf715;" id="botonLinea" title="Línea"/>
                 </div>
                 <div class="seccion-2">
+                    <input class="color-button" type="button" value="&#xf45c;" id="color-button-1"/>
+                    <input class="color-button" type="button" value="&#xf45c;" id="color-button-2"/>
+                    <input class="color-button" type="button" value="&#xf45c;" id="color-button-3"/>
+                    <input class="color-button" type="button" value="&#xf45c;" id="color-button-4"/>
+                    <input class="color-button" type="button" value="&#xf45c;" id="color-button-5"/>
+                    <br>
+                    <input class="color-button" type="button" value="&#xf45c;" id="color-button-6"/>
+                    <input class="color-button" type="button" value="&#xf45c;" id="color-button-7"/>
+                    <input class="color-button" type="button" value="&#xf45c;" id="color-button-8"/>
+                    <input class="color-button" type="button" value="&#xf45c;" id="color-button-9"/>
+                    <input class="color-button" type="button" value="&#xf45c;" id="color-button-10"/>
+                    <br>
                     <input type="color" id="colorPuntero"/>
                 </div>
                 <div class="seccion-3">
-                    <p class="tituloGrosor">Grosor: <strong><span id="valorGrosor"></span></strong></p>
+                    <p class="tituloGrosor">Grosor:<input type="number" id="valorGrosor" name="grosor" min="1" max="70" value="5"></p>
                     <input type="range" min="1" max="70" value="5" class="slider" id="rangoGrosor">
                 </div>
                 <div class="seccion-4">
                     <br>
-                    <p class="tituloFondo">Fondo:</p>
-                    <input type="color" id="colorFondo"/>
-                    <br><br>
-                    <input class="tool-button" type="button" value="&#xf2ed" id="botonLimpiar" title="Limpiar"/>
-                    <input class="tool-button" type="button" value="&#xf0c7" id="botonGuardar" title="Guardar"/>
+                    <p class="tituloFondo">Fondo:<input type="color" id="colorFondo"/></p>
+                    <br>
+                    <input class="tool-button" type="button" value="&#xf2ed;" id="botonLimpiar" title="Limpiar"/>
+                    <input class="tool-button" type="button" value="&#xf0c5;" id="botonCopiar" title="Copiar"/>
+                    <input class="tool-button" type="button" value="&#xf0c7;" id="botonGuardar" title="Guardar"/>
                 </div>
                 <div class="seccion-5">
                     <form action="https://github.com/KSAplay" target="_blank">
