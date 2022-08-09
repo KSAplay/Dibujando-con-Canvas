@@ -76,29 +76,29 @@ const botonCopiar = document.getElementById('botonCopiar');
 botonCopiar.addEventListener("click", copiarCanvas, false);
 // -----------------------------------------------------------------------------------
 const colorPunteroInput = document.getElementById('colorPuntero');
-colorPunteroInput.addEventListener("input", function(){cambioColor(colorPunteroInput.value);}, false);
+colorPunteroInput.addEventListener("input", function(){cambiarColor(colorPunteroInput.value);}, false);
 colorPunteroInput.value = "#000000";
 
 const colorButton1 = document.getElementById('color-button-1');
-colorButton1.addEventListener("click", function(){cambioColor("#000000");}, false);
+colorButton1.addEventListener("click", function(){cambiarColor("#000000");}, false);
 const colorButton2 = document.getElementById('color-button-2');
-colorButton2.addEventListener("click", function(){cambioColor("#ED1C24");}, false);
+colorButton2.addEventListener("click", function(){cambiarColor("#ED1C24");}, false);
 const colorButton3 = document.getElementById('color-button-3');
-colorButton3.addEventListener("click", function(){cambioColor("#FFC90E");}, false);
+colorButton3.addEventListener("click", function(){cambiarColor("#FFC90E");}, false);
 const colorButton4 = document.getElementById('color-button-4');
-colorButton4.addEventListener("click", function(){cambioColor("#22B14C");}, false);
+colorButton4.addEventListener("click", function(){cambiarColor("#22B14C");}, false);
 const colorButton5 = document.getElementById('color-button-5');
-colorButton5.addEventListener("click", function(){cambioColor("#3F48CC");}, false);
+colorButton5.addEventListener("click", function(){cambiarColor("#3F48CC");}, false);
 const colorButton6 = document.getElementById('color-button-6');
-colorButton6.addEventListener("click", function(){cambioColor("#FFFFFF");}, false);
+colorButton6.addEventListener("click", function(){cambiarColor("#FFFFFF");}, false);
 const colorButton7 = document.getElementById('color-button-7');
-colorButton7.addEventListener("click", function(){cambioColor("#FF7F27");}, false);
+colorButton7.addEventListener("click", function(){cambiarColor("#FF7F27");}, false);
 const colorButton8 = document.getElementById('color-button-8');
-colorButton8.addEventListener("click", function(){cambioColor("#FFF200");}, false);
+colorButton8.addEventListener("click", function(){cambiarColor("#FFF200");}, false);
 const colorButton9 = document.getElementById('color-button-9');
-colorButton9.addEventListener("click", function(){cambioColor("#B5E61D");}, false);
+colorButton9.addEventListener("click", function(){cambiarColor("#B5E61D");}, false);
 const colorButton10 = document.getElementById('color-button-10');
-colorButton10.addEventListener("click", function(){cambioColor("#00A2E8");}, false);
+colorButton10.addEventListener("click", function(){cambiarColor("#00A2E8");}, false);
 
 const slider = document.getElementById('rangoGrosor');
 const valorGrosor = document.getElementById('valorGrosor');
@@ -115,15 +115,24 @@ slider.oninput = function() {
 
 // Eventos del Mouse del Canvas Auxiliar para las animaciones y para activar las funciones principales
 // Usamos el canvas auxiliar porque está por encima del canvas principal
-canvasAux.addEventListener("mousedown", clickDown, false);
-canvasAux.addEventListener("mouseup", clickUp, false);
-canvasAux.addEventListener("mousemove", movimientoMouse, false);
+canvasAux.addEventListener('mousedown', clickDown, false);
+canvasAux.addEventListener('mouseup', clickUp, false);
+canvasAux.addEventListener('mousemove', movimientoMouse, false);
 canvasAux.addEventListener('mouseleave', clickUp, false);
 
+canvasAux.addEventListener('touchstart', touchstart, false);
+canvasAux.addEventListener('touchend', touchend, false);
+canvasAux.addEventListener('touchmove', touchmove, false);
+canvasAux.addEventListener('touchcancel', touchend, false);
+
+function touchstart(event) { clickDown(event.touches[0]) }
+function touchmove(event) { movimientoMouse(event.touches[0]); event.preventDefault(); }
+function touchend(event) { clickUp(event.changedTouches[0]) }
+
 // Eventos del Slider y el Input del Grosor para animar los cambios
-slider.addEventListener("mousedown", function(){cambiandoGrosorPuntero = true;}, false);
-slider.addEventListener("mousemove", verGrosorPuntero, false);
-slider.addEventListener("mouseup", function(){
+slider.addEventListener('mousedown', function(){cambiandoGrosorPuntero = true;}, false);
+slider.addEventListener('mousemove', verGrosorPuntero, false);
+slider.addEventListener('mouseup', function(){
     cambiandoGrosorPuntero = false; ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);}, false);
 valorGrosor.addEventListener("change", function(){
     slider.value = this.value; grosorPuntero = this.value; cambiandoGrosorPuntero = true; verGrosorPuntero();}, false);
@@ -172,17 +181,17 @@ var posXRect = 0, posYRect = 0;
 var mostrarAnimacion = false;
 
 var xPos, yPos, centerX, centerY, radioX, radioY, rotacion = 0;
-var creandoRectangulo = false, creandoCirculo = false, conRelleno = true;
+var creandoRectangulo = false, creandoCirculo = false, conRelleno = false;
 var radio = 25;
 var borrando = false;
-var creandoLinea = false, rellenandoColor = false, seleccionandoColor = false;
+var creandoLinea = false, rellenandoColor = false;
+var seleccionandoColor = false;
 
 var presionandoCtrl = false, presionandoShift = false;
-var ventanaAlertaActiva = false, dibujandoLineaRecta = false, lineaRectaEnX = false;
+var ventanaAlertaActiva = false, dibujandoLineaRecta = false, lineaRectaEnX = false, posXfinal, posYfinal;
 var loopMensajeCopiado, contadorMensajeCopiado = 0;
 
-
-var listaCanvas = [], posActual = -1;    // Para poder usar el Ctrl+Z y el Ctrl+Y
+var listaCanvas = [], posActual = -1; // Para poder usar el Ctrl+Z y el Ctrl+Y
 
 // -------------------------------------------------------------------------
 //                         FUNCIONES PRINCIPALES
@@ -207,10 +216,130 @@ function clickDown(evento){
         ctx.globalCompositeOperation = "source-over";
 
     } else if(rellenandoColor){
-        // asd
+        // Separamos el color que está en Hexadecimal de 2 en 2 caracteres y también eliminamos el símbolo #
+        var aux = colorPuntero.slice(1).toLowerCase().match(/.{1,2}/g);
+        // Invertimos el orden y le agregamos el alpha al maximo (FF) y ese será el color a rellenar
+        const colorRelleno = 'ff'+aux[2]+aux[1]+aux[0];
+        // Leemos los pixeles/data del canvas
+        const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+        // Hacemos una vista Uint32Array en los pixeles para poder manipularlos
+        // un valor de 32bit a la vez en lugar de como 4 bytes por pixel
+        const pixelData = {
+            width: imageData.width,
+            height: imageData.height,
+            data: new Uint32Array(imageData.data.buffer),
+        };
+
+        // Obtenemos el color que vamos a rellenar
+        const colorObjetivo = getPixel(pixelData, pos.x, pos.y);
+        // Verificamos si estamos rellenando en un color diferente
+        if (!compararColores(colorObjetivo, parseInt(colorRelleno,16))) {
+            // Establecemos un array donde se van a almacenar todas lineas/pixeles que se va a verificar
+            const spansToCheck = [];
+            // Función para almacenar la siguiente linea/pixeles a verificar
+            function addSpan(left, right, y, direccion) {
+                // "direccion" (0 al inicio, -1 hacia arriba, 1 hacia abajo)
+                // "left" y "right" para verificar los pixeles de izquierda a derecha, donde "start" es el mismo "left"
+                // "y" es la posicion en el height del canvas/pixelData
+                spansToCheck.push({left, right, y, direccion});
+            }
+            // Función para verificar la linea/pixeles que se encuentra arriba o abajo de la linea que se había almacenado
+            // y en caso de encontrar un pixel igual al que dimos click para rellenar, almacenar la linea en el array para verificarlo
+            function checkSpan(left, right, y, direccion) {
+                let inSpan = false;
+                let start;
+                let x;
+                // Analizamos los pixeles de derecha a izquierda en la altura "y"
+                // y cada vez que se encuentre un pixel con el mismo color establecemos un marcador
+                for (x = left; x < right; ++x) {
+                    const color = getPixel(pixelData, x, y);
+                    if (compararColores(color, colorObjetivo)) {
+                        // Si el color del pixel es igual al color objetivo y no hay marcador, establecemos uno
+                        if (!inSpan) {
+                            inSpan = true;
+                            start = x;
+                        }
+                    } else {
+                        // Si el color del pixel es diferente al color objetivo y existe un marcador, añadimos una linea a verificar
+                        if (inSpan) {
+                            inSpan = false;
+                            addSpan(start, x - 1, y, direccion);
+                        }
+                    }
+                }
+                // Si al terminar de verificar la linea, no encontró un color diferente al color objetivo y existe un marcador, añadimos la linea para verificarla
+                if (inSpan) {
+                    inSpan = false;
+                    addSpan(start, x - 1, y, direccion);
+                }
+            }
+            // Añadimos la primera linea a verificar desde donde se hizo click
+            addSpan(pos.x, pos.x, pos.y, 0);
+            // Empezamos el bucle hasta que no exista ninguna linea a verificar
+            while (spansToCheck.length > 0) {
+                // Guardamos el valor de las variables de la linea que se ha eliminado
+                const {left, right, y, direccion} = spansToCheck.pop();
+                // do left until we hit something, while we do this check above and below and add
+                let l = left;
+                for (;;) {
+                    --l;
+                    const color = getPixel(pixelData, l, y);
+                    if (!compararColores(color, colorObjetivo)) {
+                        break;
+                    } else {
+                        if(l < 0){
+                            l++;
+                            break;
+                        }
+                    }
+                }
+                
+                let r = right;
+                for (;;) {
+                    ++r;
+                    const color = getPixel(pixelData, r, y);
+                    if (!compararColores(color, colorObjetivo)) {
+                        break;
+                    } else {
+                        if(r > pixelData.width){
+                            r--;
+                            break;
+                        }
+                    }
+                }
+                // Pintamos la linea que hemos identificado que tenga el colorObjetivo
+                const desLinea = y * pixelData.width;
+                pixelData.data.fill(parseInt(colorRelleno,16), desLinea + l, desLinea + r);
+                // Verificamos la direccion y chequeamos la siguiente linea en dicha direccion
+                if(y - 1 >= 0){
+                    if (direccion <= 0) {
+                        checkSpan(l, r, y - 1, -1);
+                    } else {
+                        checkSpan(l, left, y - 1, -1);
+                        checkSpan(right, r, y - 1, -1);
+                    }
+                }
+                
+                if(y + 1 <= pixelData.height){
+                    if (direccion >= 0) {
+                        checkSpan(l, r, y + 1, +1);
+                    } else {
+                        checkSpan(l, left, y + 1, +1);
+                        checkSpan(right, r, y + 1, +1);
+                    } 
+                }    
+            }
+            // Colocamos la data de vuelta para mostrar lo rellenado
+            ctx.putImageData(imageData, 0, 0);
+        }
 
     } else if(seleccionandoColor){
-        // asd
+        // Leemos el pixel seleccionado
+        var rgba = obtenerColorPixel(pos.x, pos.y);
+        // Convertimos el color RGB a Hexadecimal
+        var colorObtenido = rgbToHex(rgba[0],rgba[1],rgba[2]);
+        // Cambiamos el color obtenido
+        cambiarColor('#'+colorObtenido);
 
     } else if(!creandoCirculo && !creandoRectangulo && !creandoLinea){
         // Si no se está haciendo un circulo o un rectángulo, ni tampoco se está usando el borrador,
@@ -334,15 +463,81 @@ function movimientoMouse(evento){
             }
         // ------------------- PARA LAS LÍNEAS (MANTENIENDO CLICK) -------------------
         } else if (creandoLinea){
-            ctxAux.globalCompositeOperation = "source-over";
-            ctxAux.strokeStyle = colorPuntero;
-            ctxAux.lineWidth = grosorPuntero;
-            ctxAux.lineJoin = "round";
-            ctxAux.beginPath();
-            ctxAux.moveTo(pos.x,pos.y);
-            ctxAux.lineTo(evento.layerX,evento.layerY);
-            ctxAux.closePath();
-            ctxAux.stroke();
+            if(presionandoShift){
+                ctxAux.globalCompositeOperation = "source-over";
+                ctxAux.strokeStyle = colorPuntero;
+                ctxAux.lineWidth = grosorPuntero;
+                ctxAux.lineJoin = "round";
+                ctxAux.beginPath();
+                ctxAux.moveTo(pos.x,pos.y);
+                
+                var distX = Math.abs(pos.x - evento.layerX);
+                var distY = Math.abs(pos.y - evento.layerY);
+                var punteroY = evento.layerY - pos.y;
+                var faltante = Math.abs(distX - distY);
+                if(distX < distY){
+                    var areaDiagonal = distY/2;
+                } else if(distX > distY){
+                    var areaDiagonal = distX/2;
+                } else {
+                    var areaDiagonal = 0;
+                }
+                if(distX === distY || (((distX < distY + areaDiagonal) && (distX > distY - areaDiagonal)) || ((distY < distX + areaDiagonal) && (distY > distX - areaDiagonal)))){
+                    if(punteroY <= 0){
+                        if(distX < distY){
+                            ctxAux.lineTo(evento.layerX,evento.layerY + faltante);
+                            posXfinal = evento.layerX;
+                            posYfinal = evento.layerY + faltante;
+                        } else {
+                            ctxAux.lineTo(evento.layerX,evento.layerY - faltante);
+                            posXfinal = evento.layerX;
+                            posYfinal = evento.layerY - faltante;
+                        }
+                    } else {
+                        if(distX < distY){
+                            ctxAux.lineTo(evento.layerX,evento.layerY - faltante);
+                            posXfinal = evento.layerX;
+                            posYfinal = evento.layerY - faltante;
+                        } else {
+                            ctxAux.lineTo(evento.layerX,evento.layerY + faltante);
+                            posXfinal = evento.layerX;
+                            posYfinal = evento.layerY + faltante;
+                        }
+                    }
+                    ctxAux.closePath();
+                    ctxAux.stroke();
+                } else if( distX < distY){
+                    ctxAux.lineTo(pos.x,evento.layerY);
+                    ctxAux.closePath();
+                    ctxAux.stroke();
+                    posXfinal = pos.x;
+                    posYfinal = evento.layerY;
+                } else if( distX >  distY){
+                    ctxAux.lineTo(evento.layerX,pos.y);
+                    ctxAux.closePath();
+                    ctxAux.stroke();
+                    posXfinal = evento.layerX;
+                    posYfinal = pos.y;
+                } else {
+                    ctxAux.lineTo(evento.layerX,evento.layerY);
+                    ctxAux.closePath();
+                    ctxAux.stroke();
+                    posXfinal = evento.layerX;
+                    posYfinal = evento.layerY;
+                }
+            } else {
+                ctxAux.globalCompositeOperation = "source-over";
+                ctxAux.strokeStyle = colorPuntero;
+                ctxAux.lineWidth = grosorPuntero;
+                ctxAux.lineJoin = "round";
+                ctxAux.beginPath();
+                ctxAux.moveTo(pos.x,pos.y);
+                ctxAux.lineTo(evento.layerX,evento.layerY);
+                ctxAux.closePath();
+                ctxAux.stroke();
+                posXfinal = evento.layerX;
+                posYfinal = evento.layerY;
+            }
         } else {
             // ----------------------- PARA EL BORRADOR ------------------------
             if(borrando){
@@ -392,7 +587,7 @@ function movimientoMouse(evento){
                     pos.x = evento.layerX;
                     pos.y = evento.layerY;
                 }
-            } else {
+            } else if(!seleccionandoColor && !rellenandoColor){
                 // ------------------------ PARA EL PINCEL ------------------------
                 if(presionandoShift){
                     ctx.strokeStyle = colorPuntero;
@@ -504,11 +699,9 @@ function clickUp(evento){
     if(estadoClick){
         // Limpiamos el canvasAuxiliar
         ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
-        // Verifica si se esta creando alguna figura (Rectangulo o Circulo, con relleno o sin relleno)
+        // Verifica si se esta creando alguna figura (Línea, Rectangulo o Circulo, con relleno o sin relleno)
+        // Y dibujamos la figura en el canvas principal con los datos obtenidos en el canvas auxiliar
         if(creandoRectangulo){
-            //posXRect = evento.layerX - widthAux/2;
-            //posYRect = evento.layerY - heightAux/2;
-            // Aqui dibujamos el rectangulo en el canvas principal con los datos obtenidos con el canvasAuxiliar
             if(conRelleno){
                 ctx.globalCompositeOperation = "source-over";
                 ctx.fillStyle = colorPuntero;
@@ -569,11 +762,14 @@ function clickUp(evento){
             ctx.lineJoin = "round";
             ctx.beginPath();
             ctx.moveTo(pos.x,pos.y);
-            ctx.lineTo(evento.layerX,evento.layerY);
+            ctx.lineTo(posXfinal,posYfinal);
             ctx.closePath();
             ctx.stroke();
         }
-        guardarCambios(canvas);
+        // Que no guarde cambios cuando se selecciona color
+        if(!seleccionandoColor){
+            guardarCambios(canvas);
+        }
     } else {
         ctxAux.clearRect(0, 0, ctxAux.canvas.width, ctxAux.canvas.height);
     }
@@ -584,7 +780,7 @@ function clickUp(evento){
 // -------------------------------------------------------------------------
 //                         FUNCIONES SECUNDARIAS
 // -------------------------------------------------------------------------
-// Función para guardar el lienzo en una imagen
+// Función para guardar el lienzo en una imagen y descargarla
 function guardarLienzo(){
     // Creamos el canvas donde se pondrá el fondo escogido y se pegará todo lo diseñado
     const canvasFinal = document.createElement('canvas');
@@ -604,7 +800,7 @@ function guardarLienzo(){
     link.click();
 }
 
-// Función para copiar el canvas al portapapeles
+// Función para copiar el canvas al portapapeles del windows y poder pegar la imagen donde sea
 function copiarCanvas(){
     // Creamos el canvas donde se pondrá el fondo escogido y se pegará todo lo diseñado
     const canvasFinal = document.createElement('canvas');
@@ -622,7 +818,7 @@ function copiarCanvas(){
         const imagen = new ClipboardItem({ "image/png": blob });
         navigator.clipboard.write([imagen]); 
     });
-    // Mostrar mensaje de Copiado! y luego quitarlo
+    // Mostrar mensaje de ¡Copiado! y luego quitarlo
     document.getElementById('contenedor').appendChild(mensajeCopiado);
     loopMensajeCopiado = setInterval(contarMensajeCopiado, 1000);
 }
@@ -636,7 +832,6 @@ function contarMensajeCopiado(){
     } else {
         contadorMensajeCopiado++;
     }
-    //console.log("contadorMensaje: "+contadorMensajeCopiado);
 }
 
 // Función para deshacer un cambio realizado en el canvas
@@ -649,8 +844,6 @@ function deshacer(){
         if(posActual != -1){
             ctx.drawImage(listaCanvas[posActual], 0, 0);
         }
-        //console.log("Deshaciendo...\nPosicionActual: "+posActual+"\nLongitud Array: "+listaCanvas.length);
-        //console.log(listaCanvas);
     }
 }
 
@@ -660,8 +853,6 @@ function rehacer(){
         posActual++;
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.drawImage(listaCanvas[posActual], 0, 0);
-        //console.log("Rehaciendo...\nPosicionActual: "+posActual+"\nLongitud Array: "+listaCanvas.length);
-        //console.log(listaCanvas);
     }
 }
 
@@ -674,22 +865,21 @@ function guardarCambios(canvas){
         //console.log("Recortando canvas...\nPosicionActual: "+posActual+"\nLongitud Array: "+listaCanvas.length);
         //console.log(listaCanvas);
     }
-    // Guardamos el canvas en un nuevo canvas que meteremos en el array, cada canvas con un nuevo ID
+    // Guardamos el canvas en un nuevo canvas que meteremos en el array, cada canvas con un id diferente
     var newCanvas = document.createElement('canvas');
     newCanvas.id = 'canvas-'+listaCanvas.length;
     newCanvas.width = paper.offsetWidth;
     newCanvas.height = paper.offsetHeight;
     var ctxNew = newCanvas.getContext("2d");
+
     ctxNew.drawImage(canvas, 0, 0);
     listaCanvas.push(newCanvas);
+
     posActual++;
-    //console.log("Guardando canvas...\nPosicionActual: "+posActual+"\nLongitud Array: "+listaCanvas.length);
-    //console.log(listaCanvas);
 }
 
-// Función para cambiar de color el puntero
-function cambioColor(color)
-{
+// Función para cambiar de color el puntero y mostrar su valor en el recuadro
+function cambiarColor(color){
     colorPuntero = color;
     colorPunteroInput.value = color;
 }
@@ -893,4 +1083,63 @@ function deseleccionarBotones(){
     botonLinea.style.background = colorDeseleccion;
     botonRellenar.style.background = colorDeseleccion;
     botonSelector.style.background = colorDeseleccion;
+}
+
+// Función para convertir color RGB a Hexadecimal
+function rgbToHex(r, g, b) {
+    if (r > 255 || g > 255 || b > 255){
+        throw "Componente de color no válido.";
+    }
+    return ((r << 16) | (g << 8) | b).toString(16);
+}
+
+// Función para obtener el color del pixel seleccionado en X y Y
+function obtenerColorPixel(x,y){
+    // Leemos el pixel seleccionado
+    var pixel = ctx.getImageData(x, y, 1, 1).data; 
+    // Verificamos si el pixel obtenido es transparente
+    if((pixel[0] == 0) && (pixel[1] == 0) && (pixel[2] == 0) && (pixel[3] == 0)){
+        pixel = [255,255,255,1];
+        return pixel;
+    } else {
+        return pixel;
+    }
+}
+
+// Función para obtener el color, en decimales, del pixel ubicado en el Uint32Array para el rellenado
+function getPixel(pixelData, x, y) {
+    if (x < 0 || y < 0 || x >= pixelData.width || y >= pixelData.height) {
+      return -1;  // impossible color
+    } else {
+      return pixelData.data[y * pixelData.width + x];
+    }
+}
+
+// Función para comparar dos colores que se encuentran en decimales
+function compararColores(color1, color2){
+    // Transformamos los colores a Hexadecimal
+    var color1_Hex = color1.toString(16);
+    var color2_Hex = color2.toString(16);
+    // Comprobamos si tienen el alpha al maximo, es decir que los dos primeros caracteres deben ser FF;
+    var aux1 = color1_Hex.toLowerCase().match(/.{1,2}/g)
+    var aux2 = color2_Hex.toLowerCase().match(/.{1,2}/g)
+    if(aux1[0] !== "ff"){
+        color1_Hex = "ff"+color1_Hex.toLowerCase().substring(2)
+    }
+    if(aux2[0] !== "ff"){
+        color2_Hex = "ff"+color2_Hex.toLowerCase().substring(2)
+    }
+    // Convertimos los hexadecimales nuevamente a decimales
+    if(color1_Hex === "ff" && color2_Hex === "ff"){
+        return true;
+    } else {
+        var color1_Dec = parseInt(color1_Hex,16);
+        var color2_Dec = parseInt(color2_Hex,16);
+        // Lo comparamos solo los 3 primeros digitos
+        if(color1_Dec.toString().substring(0,4) === color2_Dec.toString().substring(0,4)){
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

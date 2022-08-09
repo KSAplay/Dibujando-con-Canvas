@@ -97,12 +97,6 @@ div#mensajeCopiado:after {
     top: 40px;
 }
 
-/* ------------- TITULO DIBUJANDO CON CANVAS --------------- *
-.titulo{
-    margin: 40px 0;
-    text-align: center;
-}
-*/
 /* -------------------- BLOQUE PRINCIPAL ------------------- */
 .container{
     text-align: center;
@@ -131,9 +125,9 @@ div#mensajeCopiado:after {
 .paper *{
     -moz-user-select: none;
     -webkit-user-select: none;
-    -ms-user-select:none;
-    user-select:none;
-    -o-user-select:none;
+    -ms-user-select: none;
+    user-select: none;
+    -o-user-select: none;
 }
 
 /* ---------- SECCIONES DEL PANEL DE HERRAMIENTAS --------- */
